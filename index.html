@@ -10,7 +10,7 @@
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.search{grid-template-columns:repeat(2,1fr)}.about{grid-template-columns:1fr}.nav{gap:12px}.hero{min-height:520px}}
 @media(max-width:600px){.top{flex-wrap:wrap}.nav{width:100%;justify-content:space-between;font-size:12px}.hero{padding:35px 5%;min-height:540px}.search{grid-template-columns:1fr 1fr}.search button{grid-column:1/-1}.grid{grid-template-columns:1fr}.section{padding:38px 5%}.section-head{display:block}.features{grid-template-columns:1fr}.footer{display:block;text-align:center}.footer span{display:block;margin:5px}}
 
-.settings-btn{position:fixed;right:18px;bottom:20px;z-index:20;border:0;border-radius:50px;padding:12px 16px;background:#d0b06d;color:#10243a;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 6px 22px #0003}
+.settings-btn{display:none;position:fixed;right:18px;bottom:20px;z-index:20;border:0;border-radius:50px;padding:12px 16px;background:#d0b06d;color:#10243a;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 6px 22px #0003}
 .settings-panel{display:none;position:fixed;inset:0;background:#061523bb;z-index:30;align-items:center;justify-content:center;padding:18px}
 .settings-box{background:#fff;color:#182838;width:min(620px,100%);max-height:92vh;overflow:auto;border-radius:18px;padding:22px;box-shadow:0 20px 60px #0005}
 .settings-box h2{margin:0 0 14px}.settings-box label{display:block;font-weight:700;margin:12px 0 5px}.settings-box input,.settings-box textarea{width:100%;border:1px solid #dbe3eb;border-radius:10px;padding:11px;font:inherit}.settings-actions{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}.settings-actions button{border:0;border-radius:10px;padding:11px 16px;font:inherit;font-weight:700;cursor:pointer;background:#10243a;color:#fff}.settings-actions .secondary{background:#e8edf2;color:#1a2d40}.logo-preview{max-height:80px;max-width:180px;object-fit:contain;margin:8px 0;display:none}
@@ -60,6 +60,14 @@ applySettings(readSettings());
 <script>
 (async function loadLiveProperties(){
  const client=window.supabase.createClient('https://lqycfhqmihobrjyycajr.supabase.co','sb_publishable_KMi-Q7lZ-dCTPnqIhIogIA_wnw2rnpH');
+ const settingsButton=document.querySelector('.settings-btn');
+ try {
+  const {data:{user}}=await client.auth.getUser();
+  if(user){
+   const {data:admin}=await client.from('admin_users').select('user_id').eq('user_id',user.id).maybeSingle();
+   if(admin) settingsButton.style.display='block';
+  }
+ } catch(e) { settingsButton.style.display='none'; }
  const grid=document.getElementById('propertyGrid');
  const escHtml=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
  const {data,error}=await client.from('properties').select('*').order('created_at',{ascending:false});
