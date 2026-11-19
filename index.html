@@ -52,14 +52,40 @@ function applySettings(v){document.getElementById('brandText').textContent=v.nam
 function openSettings(){let v=readSettings();document.getElementById('setName').value=v.name;document.getElementById('setTagline').value=v.tagline;document.getElementById('setWhats').value=v.whats;document.getElementById('setFacebook').value=v.facebook;document.getElementById('setNavy').value=v.navy;document.getElementById('setGold').value=v.gold;document.getElementById('logoPreview').src=v.logo||'';document.getElementById('logoPreview').style.display=v.logo?'block':'none';document.getElementById('settingsPanel').style.display='flex'}
 function closeSettings(){document.getElementById('settingsPanel').style.display='none'}
 function fileData(input){return new Promise(resolve=>{const f=input.files&&input.files[0];if(!f)return resolve(null);const r=new FileReader();r.onload=()=>resolve(r.result);r.readAsDataURL(f)})}
-async function saveSettings(){let v=readSettings();v.name=document.getElementById('setName').value.trim()||defaultSettings.name;v.tagline=document.getElementById('setTagline').value.trim()||defaultSettings.tagline;v.whats=document.getElementById('setWhats').value.replace(/[^0-9]/g,'')||defaultSettings.whats;v.facebook=document.getElementById('setFacebook').value.trim();v.navy=document.getElementById('setNavy').value.trim()||defaultSettings.navy;v.gold=document.getElementById('setGold').value.trim()||defaultSettings.gold;const logo=await fileData(document.getElementById('setLogo'));const bg=await fileData(document.getElementById('setBg'));if(logo)v.logo=logo;if(bg)v.bg=bg;try{localStorage.setItem('propertySiteSettings',JSON.stringify(v));applySettings(v);closeSettings();alert('تم حفظ الإعدادات على هذا المتصفح.')}catch(e){alert('حجم الصور كبير. حاول استخدام صور أصغر.')}}
-function resetSettings(){localStorage.removeItem('propertySiteSettings');applySettings(defaultSettings);closeSettings()}
+async function saveSettings(){let v=readSettings();v.name=document.getElementById('setName').value.trim()||defaultSettings.name;v.tagline=document.getElementById('setTagline').value.trim()||defaultSettings.tagline;v.whats=document.getElementById('setWhats').value.replace(/[^0-9]/g,'')||defaultSettings.whats;v.facebook=document.getElementById('setFacebook').value.trim();v.navy=document.getElementById('setNavy').value.trim()||defaultSettings.navy;v.gold=document.getElementById('setGold').value.trim()||defaultSettings.gold;const logo=await fileData(document.getElementById('setLogo'));const bg=await fileData(document.getElementById('setBg'));if(logo)v.logo=logo;if(bg)v.bg=bg;try{if(!window.siteDb)throw new Error('اتصال قاعدة البيانات غير جاهز');const {error}=await window.siteDb.from('site_settings').upsert({setting_key:'main',settings:v,updated_at:new Date().toISOString()},{onConflict:'setting_key'});if(error)throw error;localStorage.setItem('propertySiteSettings',JSON.stringify(v));applySettings(v);closeSettings();alert('تم حفظ الإعدادات لكل زوار الموقع.')}catch(e){console.error(e);alert('لم يتم الحفظ في قاعدة البيانات. تأكد من تنفيذ إعداد قاعدة البيانات ثم حاول مرة أخرى.');}}
+async function resetSettings(){if(!window.siteDb){alert('قاعدة البيانات غير متصلة');return;}const {error}=await window.siteDb.from('site_settings').delete().eq('setting_key','main');if(error){alert('تعذر استعادة الإعدادات الافتراضية.');return;}localStorage.removeItem('propertySiteSettings');applySettings(defaultSettings);closeSettings();}
 applySettings(readSettings());
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (async function loadLiveProperties(){
  const client=window.supabase.createClient('https://lqycfhqmihobrjyycajr.supabase.co','sb_publishable_KMi-Q7lZ-dCTPnqIhIogIA_wnw2rnpH');
+ window.siteDb=client;
+ let isSiteAdmin=false;
+ try {
+  const {data:{user}}=await client.auth.getUser();
+  if(user){
+   const {data:admin}=await client.from('admin_users').select('user_id').eq('user_id',user.id).maybeSingle();
+   isSiteAdmin=!!admin;
+   if(isSiteAdmin) document.querySelector('.settings-btn').style.display='block';
+  }
+ } catch(e) { console.warn('Admin check unavailable'); }
+ try {
+  const {data:shared,error:settingsError}=await client.from('site_settings').select('settings').eq('setting_key','main').maybeSingle();
+  if(!settingsError && shared && shared.settings){
+   const merged={...defaultSettings,...shared.settings};
+   applySettings(merged);
+   try{localStorage.setItem('propertySiteSettings',JSON.stringify(merged));}catch(e){}
+  } else if(!settingsError && !shared && isSiteAdmin){
+   const saved=readSettings();
+   const hasLocal=localStorage.getItem('propertySiteSettings');
+   if(hasLocal){
+    const {error:seedError}=await client.from('site_settings').upsert({setting_key:'main',settings:saved},{onConflict:'setting_key'});
+    if(seedError) console.warn('Could not migrate local settings',seedError);
+   }
+  } else if(settingsError){ console.warn('Shared settings not available',settingsError); }
+ } catch(e){console.warn('Shared settings load failed',e);}
+
  const settingsButton=document.querySelector('.settings-btn');
  try {
   const {data:{user}}=await client.auth.getUser();
