@@ -16,7 +16,9 @@
 <section id="loginPanel" class="panel login"><h1>دخول المدير</h1><p class="muted">سجّل الدخول بالبريد الإلكتروني وكلمة المرور المسجلين في Supabase.</p>
 <div class="field"><label>البريد الإلكتروني</label><input id="email" type="email" autocomplete="username" placeholder="name@example.com"></div>
 <div class="field"><label>كلمة المرور</label><input id="password" type="password" autocomplete="current-password"></div>
-<button class="btn gold" style="width:100%" onclick="signIn()">دخول</button><div id="loginStatus" class="status"></div></section>
+<button class="btn gold" style="width:100%" onclick="signIn()">دخول</button>
+<button class="btn light" style="width:100%;margin-top:10px" onclick="sendRecoveryEmail()">نسيت كلمة المرور؟ إرسال رابط تغيير جديد</button>
+<div id="loginStatus" class="status"></div></section>
 
 <section id="recoveryPanel" class="panel login hidden">
 <h1>تغيير كلمة المرور</h1>
@@ -58,7 +60,9 @@
 <script>
 const SUPABASE_URL='https://lqycfhqmihobrjyycajr.supabase.co';
 const SUPABASE_KEY='sb_publishable_KMi-Q7lZ-dCTPnqIhIogIA_wnw2rnpH';
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+ auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit'}
+});
 let currentUser=null, editingId=null, cachedProperties=[], recoveryMode=false;
 const $=id=>document.getElementById(id);
 function msg(id,text,isError=false){$(id).textContent=text;$(id).style.color=isError?'#b42318':'#26734d'}
@@ -70,6 +74,17 @@ function showRecoveryPanel(){
  $('editor').classList.add('hidden');
  $('logout').classList.add('hidden');
  $('recoveryPanel').classList.remove('hidden');
+}
+
+async function sendRecoveryEmail(){
+ const email=$('email').value.trim();
+ if(!email){msg('loginStatus','اكتب بريدك الإلكتروني أولاً.',true);return}
+ msg('loginStatus','جارٍ إرسال رابط تغيير كلمة المرور…');
+ const {error}=await db.auth.resetPasswordForEmail(email,{
+  redirectTo:'https://mo-bakr98.github.io/BHG-Badr-Alhayah/admin.html'
+ });
+ if(error){msg('loginStatus','تعذر إرسال الرابط: '+error.message,true);return}
+ msg('loginStatus','تم إرسال رابط جديد. افتح أحدث رسالة واضغط الرابط مرة واحدة.');
 }
 
 async function signIn(){
@@ -198,8 +213,13 @@ async function deleteProperty(id){
  await loadProperties();
 }
 
+function isRecoveryLink(){
+ const hash=new URLSearchParams(window.location.hash.replace(/^#/,''));
+ const query=new URLSearchParams(window.location.search);
+ return hash.get('type')==='recovery'||query.get('type')==='recovery';
+}
 db.auth.onAuthStateChange((event,session)=>{
- if(event==='PASSWORD_RECOVERY'){showRecoveryPanel();return}
+ if(event==='PASSWORD_RECOVERY'||(event==='SIGNED_IN'&&isRecoveryLink())){showRecoveryPanel();return}
  if(event==='SIGNED_OUT'&&!recoveryMode){
   currentUser=null;
   $('dashboard').classList.add('hidden');
@@ -209,8 +229,11 @@ db.auth.onAuthStateChange((event,session)=>{
  }
 });
 db.auth.getSession().then(({data,error})=>{
+ if(isRecoveryLink()){showRecoveryPanel();return}
+ const params=new URLSearchParams(window.location.hash.replace(/^#/,''));
+ const authError=params.get('error_description')||new URLSearchParams(window.location.search).get('error_description');
+ if(authError){msg('loginStatus','رابط الاستعادة غير صالح أو منتهي. اطلب رابطاً جديداً من زر «نسيت كلمة المرور؟».',true);return}
  if(error){msg('loginStatus','تعذر التحقق من جلسة الدخول: '+error.message,true);return}
- if(window.location.hash.includes('type=recovery')){showRecoveryPanel();return}
  if(data.session&&!recoveryMode)startSession(data.session.user);
 });
 </script>
