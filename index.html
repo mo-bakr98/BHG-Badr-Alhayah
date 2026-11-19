@@ -18,7 +18,7 @@
 </style>
 </head>
 <body>
-<header class="top"><a class="brand" href="#home"><img id="siteLogo" alt="شعار" style="display:none;max-height:42px;max-width:90px;vertical-align:middle;object-fit:contain;margin-left:8px"><span id="brandText">عقارات<span>ك</span></span></a><nav class="nav"><a href="#home">الرئيسية</a><a href="#sale">بيع</a><a href="#rent">إيجار</a><a href="#about">عن الشركة</a><a href="#contact">تواصل معنا</a></nav></header>
+<header class="top"><a class="brand" href="#home"><img id="siteLogo" alt="شعار" style="display:none;max-height:42px;max-width:90px;vertical-align:middle;object-fit:contain;margin-left:8px"><span id="brandText">عقارات<span>ك</span></span></a><nav class="nav"><a href="#home">الرئيسية</a><a href="#sale">بيع</a><a href="#rent">إيجار</a><a href="#about">عن الشركة</a><a href="#contact">تواصل معنا</a><a href="admin.html">إدارة الموقع</a></nav></header>
 <section class="hero" id="home"><div class="hero-content"><div class="eyebrow">اختار بيتك.. وخطوتك الجاية</div><h1>عقارك المناسب<br>بقى أقرب مما تتخيل</h1><p>دور على شقة، فيلا، محل أو أرض للبيع والإيجار. بنساعدك توصل لاختيار يناسب احتياجك وميزانيتك.</p>
 <div class="search"><select id="type"><option value="all">كل العقارات</option><option value="sale">للبيع</option><option value="rent">للإيجار</option></select><select id="category"><option value="all">كل الأنواع</option><option value="شقة">شقة</option><option value="فيلا">فيلا</option><option value="محل">محل</option></select><input id="area" placeholder="المنطقة (مثال: بدر)"><input id="budget" type="number" placeholder="أقصى سعر"><button onclick="filterProperties()">ابحث</button></div></div></section>
 <section class="section" id="sale"><div class="section-head"><div><h2>عقارات مميزة</h2><p>اختيارات مميزة للبيع والإيجار</p></div></div><div class="grid" id="propertyGrid">
@@ -55,4 +55,26 @@ function fileData(input){return new Promise(resolve=>{const f=input.files&&input
 async function saveSettings(){let v=readSettings();v.name=document.getElementById('setName').value.trim()||defaultSettings.name;v.tagline=document.getElementById('setTagline').value.trim()||defaultSettings.tagline;v.whats=document.getElementById('setWhats').value.replace(/[^0-9]/g,'')||defaultSettings.whats;v.facebook=document.getElementById('setFacebook').value.trim();v.navy=document.getElementById('setNavy').value.trim()||defaultSettings.navy;v.gold=document.getElementById('setGold').value.trim()||defaultSettings.gold;const logo=await fileData(document.getElementById('setLogo'));const bg=await fileData(document.getElementById('setBg'));if(logo)v.logo=logo;if(bg)v.bg=bg;try{localStorage.setItem('propertySiteSettings',JSON.stringify(v));applySettings(v);closeSettings();alert('تم حفظ الإعدادات على هذا المتصفح.')}catch(e){alert('حجم الصور كبير. حاول استخدام صور أصغر.')}}
 function resetSettings(){localStorage.removeItem('propertySiteSettings');applySettings(defaultSettings);closeSettings()}
 applySettings(readSettings());
-</script></body></html>
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async function loadLiveProperties(){
+ const client=window.supabase.createClient('https://lqycfhqmihobrjyycajr.supabase.co','sb_publishable_KMi-Q7lZ-dCTPnqIhIogIA_wnw2rnpH');
+ const grid=document.getElementById('propertyGrid');
+ const escHtml=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+ const {data,error}=await client.from('properties').select('*').order('created_at',{ascending:false});
+ if(error){grid.innerHTML='<p style="grid-column:1/-1;text-align:center;color:#64748b">تعذر تحميل العقارات حاليًا. حاول مرة أخرى لاحقًا.</p>';return;}
+ const items=(data||[]).filter(p=>!p.status||p.status==='available');
+ if(!items.length){grid.innerHTML='<p style="grid-column:1/-1;text-align:center;color:#64748b">لا توجد عقارات منشورة حاليًا. تابعنا قريبًا.</p>';return;}
+ grid.innerHTML=items.map(p=>{
+  const kind=p.listing_type==='rent'?'rent':'sale';
+  const kindLabel=kind==='rent'?'للإيجار':'للبيع';
+  const image=Array.isArray(p.images)&&p.images.length?p.images[0]:'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80';
+  const price=p.price?Number(p.price).toLocaleString('en-US')+' جنيه':'السعر عند التواصل';
+  const specs=[p.bedrooms?('🛏 '+p.bedrooms+' غرف'):null,p.bathrooms?('🛁 '+p.bathrooms+' حمام'):null,p.area?('📐 '+p.area+' م²'):null].filter(Boolean).join('');
+  const area=escHtml(p.address||'مدينة بدر');
+  return '<article class="card" data-type="'+kind+'" data-category="'+escHtml(p.property_type||'')+'" data-area="'+area+'" data-price="'+Number(p.price||0)+'"><div class="photo"><img src="'+escHtml(image)+'" alt="'+escHtml(p.title)+'" loading="lazy"><span class="tag">'+kindLabel+'</span></div><div class="body"><h3>'+escHtml(p.title)+'</h3><div class="location">📍 '+area+'</div><div class="price">'+price+(kind==='rent'?' / شهريًا':'')+'</div><div class="specs">'+specs+'</div><div class="card-actions"><a href="#contact">تفاصيل</a><a href="#contact">اسأل عنها</a></div></div></article>';
+ }).join('');
+})();
+</script>
+</body></html>
