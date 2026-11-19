@@ -8,6 +8,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--navy:#10243a;--gold:#c6a66a;--paper:#f4f6f9;--ink:#1b2733;--muted:#64748b}*{box-sizing:border-box}body{margin:0;background:var(--paper);font-family:Cairo,Arial;color:var(--ink)}button,input,textarea,select{font:inherit}.top{background:var(--navy);color:white;padding:16px 5%;display:flex;justify-content:space-between;align-items:center}.top b{font-size:20px}.top span{color:var(--gold)}main{max-width:1100px;margin:32px auto;padding:0 16px}.panel{background:#fff;border:1px solid #e5eaf0;border-radius:18px;padding:24px;box-shadow:0 8px 28px #10243a0a}.login{max-width:430px;margin:8vh auto}.hidden{display:none!important}h1,h2{margin-top:0}.muted{color:var(--muted);font-size:14px}.field{margin:12px 0}.field label{display:block;font-weight:700;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;padding:11px;border:1px solid #dce3eb;border-radius:10px;background:#fff}.field textarea{min-height:85px}.btn{border:0;background:var(--navy);color:#fff;border-radius:10px;padding:11px 18px;cursor:pointer;font-weight:700}.btn.gold{background:var(--gold);color:#172a3c}.btn.light{background:#edf1f5;color:#203247}.btn.danger{background:#a83232}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}.stat{background:#f5f7fa;border-radius:12px;padding:15px}.stat strong{display:block;font-size:24px;color:var(--navy)}.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:22px 0 12px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:620px}th,td{text-align:right;padding:12px;border-bottom:1px solid #edf0f4;font-size:14px}th{background:#f7f8fa}.actions{display:flex;gap:6px}.actions button{padding:7px 10px;font-size:12px}.notice{padding:12px;border-radius:10px;background:#fff6df;color:#71531a;margin:12px 0}.status{margin-top:12px;font-size:14px;min-height:22px}.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:0 14px}.full{grid-column:1/-1}.image-preview{max-width:130px;max-height:100px;object-fit:cover;border-radius:8px;margin-top:8px}@media(max-width:650px){.stats{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.toolbar{align-items:stretch;flex-direction:column}.panel{padding:17px}}
+
+.navbar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.navbtn{border:1px solid #dce3eb;background:#fff;color:#203247;padding:10px 15px;border-radius:10px;cursor:pointer;font-weight:700}.navbtn.active{background:var(--navy);color:#fff}.section-panel{margin-top:14px}.notice{line-height:1.9}.setting-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media(max-width:650px){.setting-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -30,12 +32,26 @@
 </section>
 
 <section id="dashboard" class="hidden">
-<div class="row" style="justify-content:space-between"><div><h1>لوحة التحكم</h1><div class="muted" id="welcome"></div></div><button class="btn gold" onclick="newProperty()">＋ إضافة عقار</button></div>
-<div class="stats"><div class="stat">إجمالي العقارات<strong id="total">0</strong></div><div class="stat">طلبات العملاء<strong id="leadsCount">—</strong></div><div class="stat">العقارات المتاحة<strong id="available">0</strong></div></div>
-<div class="panel">
-<div class="toolbar"><div><h2 style="margin:0">العقارات</h2><div class="muted">إضافة وتعديل وحذف بيانات العقارات المنشورة.</div></div><button class="btn light" onclick="loadProperties()">تحديث القائمة</button></div>
-<div class="table-wrap"><table><thead><tr><th>العقار</th><th>النوع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="propertyRows"><tr><td colspan="5">جارٍ تحميل البيانات…</td></tr></tbody></table></div>
+<div class="row" style="justify-content:space-between"><div><h1>لوحة التحكم</h1><div class="muted" id="welcome"></div></div><button class="btn gold" onclick="showTab('properties',document.querySelectorAll('.navbtn')[1]);newProperty()">＋ إضافة عقار</button></div>
+<div class="navbar" aria-label="أقسام لوحة التحكم">
+<button class="navbtn active" onclick="showTab('home',this)">الرئيسية</button>
+<button class="navbtn" onclick="showTab('properties',this)">العقارات</button>
+<button class="navbtn" onclick="showTab('leads',this);loadLeads()">طلبات العملاء</button>
+<button class="navbtn" onclick="showTab('employees',this);loadAdmins()">الموظفون</button>
+<button class="navbtn" onclick="showTab('settings',this)">⚙️ الإعدادات</button>
 </div>
+<div id="tab-home" class="tab-content">
+<div class="stats"><div class="stat">إجمالي العقارات<strong id="total">0</strong></div><div class="stat">طلبات العملاء<strong id="leadsCount">—</strong></div><div class="stat">العقارات المتاحة<strong id="available">0</strong></div></div>
+<div class="panel"><h2>مرحبًا بك في لوحة BHG</h2><p class="muted">استخدم الأقسام بالأعلى لإدارة العقارات ومتابعة العملاء والموظفين وإعدادات الموقع.</p><div class="row"><button class="btn gold" onclick="showTab('properties',document.querySelectorAll('.navbtn')[1]);newProperty()">＋ إضافة عقار</button><a class="btn light" style="text-align:center;text-decoration:none" href="https://mo-bakr98.github.io/BHG-Badr-Alhayah/" target="_blank">فتح الموقع</a></div></div>
+</div>
+<div id="tab-properties" class="tab-content hidden">
+<div class="panel"><div class="toolbar"><div><h2 style="margin:0">العقارات</h2><div class="muted">إضافة وتعديل وحذف بيانات العقارات المنشورة.</div></div><button class="btn light" onclick="loadProperties()">تحديث القائمة</button></div>
+<div class="table-wrap"><table><thead><tr><th>العقار</th><th>النوع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="propertyRows"><tr><td colspan="5">جارٍ تحميل البيانات…</td></tr></tbody></table></div></div>
+</div>
+<div id="tab-leads" class="tab-content hidden"><div class="panel"><div class="toolbar"><div><h2>طلبات العملاء</h2><p class="muted">عرض الطلبات المسجلة في قاعدة البيانات.</p></div><button class="btn light" onclick="loadLeads()">تحديث</button></div><div id="leadsTable" class="table-wrap">اضغط تحديث لعرض الطلبات.</div></div></div>
+<div id="tab-employees" class="tab-content hidden"><div class="panel"><h2>إدارة الموظفين</h2><div class="notice">إضافة الموظفين وإرسال دعوات الدخول تحتاج وظيفة آمنة على Supabase. لن أضع مفتاح الإدارة السري داخل الموقع؛ لأن ذلك يعرّض حسابك وقاعدة البيانات للاختراق.</div><h3>حسابات الإدارة المسجلة</h3><div id="adminsTable" class="table-wrap">جارٍ التحميل…</div><p class="muted">هذه القائمة تعرض سجلات الصلاحيات فقط، وليست قائمة بكل مستخدمي الموقع.</p></div></div>
+<div id="tab-settings" class="tab-content hidden"><div class="panel"><h2>⚙️ إعدادات الموقع</h2><p>إعدادات اسم الشركة والشعار والخلفية وبيانات التواصل موجودة حاليًا في صفحة الموقع الرئيسية.</p><a class="btn gold" style="display:inline-block;text-decoration:none" href="https://mo-bakr98.github.io/BHG-Badr-Alhayah/" target="_blank">افتح الموقع ثم اضغط «إعدادات الموقع»</a><div class="notice">ملاحظة: الإعدادات الحالية في الصفحة الرئيسية محفوظة على المتصفح الذي يتم التعديل منه، وليست إعدادات مشتركة لكل الزوار.</div></div></div>
+
 </section>
 
 <section id="editor" class="panel hidden" style="margin-top:18px">
@@ -213,6 +229,11 @@ async function deleteProperty(id){
  if(error){msg('globalStatus','تعذر الحذف: '+error.message,true);return}
  await loadProperties();
 }
+
+
+function showTab(name,button){document.querySelectorAll('.tab-content').forEach(x=>x.classList.add('hidden'));$('tab-'+name).classList.remove('hidden');document.querySelectorAll('.navbtn').forEach(x=>x.classList.remove('active'));if(button)button.classList.add('active');if(name==='properties')loadProperties();}
+async function loadLeads(){const box=$('leadsTable');box.textContent='جارٍ تحميل الطلبات…';const {data,error}=await db.from('leads').select('*').limit(100);if(error){box.textContent='تعذر تحميل الطلبات: '+error.message;return;}if(!data||!data.length){box.textContent='لا توجد طلبات عملاء مسجلة حتى الآن.';return;}const cols=Object.keys(data[0]);box.innerHTML='<table><thead><tr>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+data.map(row=>'<tr>'+cols.map(c=>'<td>'+esc(typeof row[c]==='object'?JSON.stringify(row[c]):row[c])+'</td>').join('')+'</tr>').join('')+'</tbody></table>';}
+async function loadAdmins(){const box=$('adminsTable');box.textContent='جارٍ تحميل حسابات الإدارة…';const {data,error}=await db.from('admin_users').select('user_id,role');if(error){box.textContent='تعذر تحميل الحسابات: '+error.message;return;}if(!data||!data.length){box.textContent='لا توجد حسابات إدارة.';return;}box.innerHTML='<table><thead><tr><th>معرّف المستخدم</th><th>الصلاحية</th></tr></thead><tbody>'+data.map(a=>'<tr><td dir="ltr">'+esc(a.user_id)+'</td><td>'+esc(a.role)+'</td></tr>').join('')+'</tbody></table>';}
 
 function isRecoveryLink(){
  const hash=new URLSearchParams(window.location.hash.replace(/^#/,''));
