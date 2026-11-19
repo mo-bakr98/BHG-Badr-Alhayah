@@ -127,8 +127,9 @@ async function startSession(user){
  msg('loginStatus','');
  const {data:admin,error}=await db.from('admin_users').select('role').eq('user_id',user.id).maybeSingle();
  if(error||!admin||admin.role!=='admin'){
+  const reason=error ? error.message : (!admin ? 'لم يتم العثور على سجل المدير لهذا المستخدم' : 'الدور الحالي: '+admin.role);
   await db.auth.signOut();
-  msg('loginStatus','هذا الحساب ليس لديه صلاحية مدير. تواصل مع مسؤول الموقع.',true);
+  msg('loginStatus','فشل التحقق من صلاحية المدير: '+reason+' | User ID: '+user.id,true);
   return;
  }
  $('loginPanel').classList.add('hidden');
