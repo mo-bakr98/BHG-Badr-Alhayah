@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لوحة إدارة BHG</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--navy:#10243a;--gold:#c6a66a;--paper:#f4f6f9;--ink:#1b2733;--muted:#64748b}*{box-sizing:border-box}body{margin:0;background:var(--paper);font-family:Cairo,Arial;color:var(--ink)}button,input,textarea,select{font:inherit}.top{background:var(--navy);color:white;padding:16px 5%;display:flex;justify-content:space-between;align-items:center}.top b{font-size:20px}.top span{color:var(--gold)}main{max-width:1100px;margin:32px auto;padding:0 16px}.panel{background:#fff;border:1px solid #e5eaf0;border-radius:18px;padding:24px;box-shadow:0 8px 28px #10243a0a}.login{max-width:430px;margin:8vh auto}.hidden{display:none!important}h1,h2{margin-top:0}.muted{color:var(--muted);font-size:14px}.field{margin:12px 0}.field label{display:block;font-weight:700;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;padding:11px;border:1px solid #dce3eb;border-radius:10px;background:#fff}.field textarea{min-height:85px}.btn{border:0;background:var(--navy);color:#fff;border-radius:10px;padding:11px 18px;cursor:pointer;font-weight:700}.btn.gold{background:var(--gold);color:#172a3c}.btn.light{background:#edf1f5;color:#203247}.btn.danger{background:#a83232}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}.stat{background:#f5f7fa;border-radius:12px;padding:15px}.stat strong{display:block;font-size:24px;color:var(--navy)}.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:22px 0 12px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:620px}th,td{text-align:right;padding:12px;border-bottom:1px solid #edf0f4;font-size:14px}th{background:#f7f8fa}.actions{display:flex;gap:6px}.actions button{padding:7px 10px;font-size:12px}.notice{padding:12px;border-radius:10px;background:#fff6df;color:#71531a;margin:12px 0}.status{margin-top:12px;font-size:14px;min-height:22px}.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:0 14px}.full{grid-column:1/-1}.image-preview{max-width:130px;max-height:100px;object-fit:cover;border-radius:8px;margin-top:8px}@media(max-width:650px){.stats{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.toolbar{align-items:stretch;flex-direction:column}.panel{padding:17px}}
+</style>
+</head>
+<body>
+<header class="top"><b>BHG <span>إدارة العقارات</span></b><button id="logout" class="btn light hidden" onclick="signOut()">تسجيل الخروج</button></header>
+<main>
+<section id="loginPanel" class="panel login"><h1>دخول المدير</h1><p class="muted">سجّل الدخول بالبريد الإلكتروني وكلمة المرور المسجلين في Supabase.</p>
+<div class="field"><label>البريد الإلكتروني</label><input id="email" type="email" autocomplete="username" placeholder="name@example.com"></div>
+<div class="field"><label>كلمة المرور</label><input id="password" type="password" autocomplete="current-password"></div>
+<button class="btn gold" style="width:100%" onclick="signIn()">دخول</button><div id="loginStatus" class="status"></div></section>
+<section id="dashboard" class="hidden">
+<div class="row" style="justify-content:space-between"><div><h1>لوحة التحكم</h1><div class="muted" id="welcome"></div></div><button class="btn gold" onclick="newProperty()">＋ إضافة عقار</button></div>
+<div class="stats"><div class="stat">إجمالي العقارات<strong id="total">0</strong></div><div class="stat">طلبات العملاء<strong id="leadsCount">—</strong></div><div class="stat">العقارات المتاحة<strong id="available">0</strong></div></div>
+<div class="panel">
+<div class="toolbar"><div><h2 style="margin:0">العقارات</h2><div class="muted">إضافة وتعديل وحذف بيانات العقارات المنشورة.</div></div><button class="btn light" onclick="loadProperties()">تحديث القائمة</button></div>
+<div class="table-wrap"><table><thead><tr><th>العقار</th><th>النوع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="propertyRows"><tr><td colspan="5">جارٍ تحميل البيانات…</td></tr></tbody></table></div>
+</div>
+</section>
+<section id="editor" class="panel hidden" style="margin-top:18px">
+<h2 id="editorTitle">إضافة عقار</h2>
+<div class="formgrid">
+<div class="field"><label>عنوان العقار *</label><input id="pTitle" required></div>
+<div class="field"><label>السعر بالجنيه</label><input id="pPrice" type="number" min="0"></div>
+<div class="field"><label>نوع العرض</label><select id="pListing"><option value="sale">للبيع</option><option value="rent">للإيجار</option></select></div>
+<div class="field"><label>نوع العقار</label><select id="pType"><option>شقة</option><option>فيلا</option><option>محل</option><option>أرض</option><option>إداري</option><option>تجاري</option></select></div>
+<div class="field"><label>العنوان / المنطقة</label><input id="pAddress" placeholder="مدينة بدر - الحي..."></div>
+<div class="field"><label>المساحة بالمتر</label><input id="pArea" type="number" min="0"></div>
+<div class="field"><label>عدد الغرف</label><input id="pBeds" type="number" min="0"></div>
+<div class="field"><label>عدد الحمامات</label><input id="pBaths" type="number" min="0"></div>
+<div class="field full"><label>الوصف</label><textarea id="pDescription"></textarea></div>
+<div class="field full"><label>صور العقار (JPG / PNG / WEBP، حتى 5MB للصورة)</label><input id="pImages" type="file" accept="image/jpeg,image/png,image/webp" multiple><div id="imageStatus" class="muted"></div></div>
+<div class="field"><label>الحالة</label><select id="pStatus"><option value="available">متاح</option><option value="reserved">محجوز</option><option value="sold">تم البيع</option><option value="rented">تم التأجير</option></select></div>
+</div>
+<div class="row"><button class="btn gold" onclick="saveProperty()">حفظ العقار</button><button class="btn light" onclick="closeEditor()">إلغاء</button></div><div id="editorStatus" class="status"></div>
+</section>
+<div id="globalStatus" class="status"></div>
+</main>
+<script>
+const SUPABASE_URL='https://lqycfhqmihobrjyycajr.supabase.co';
+const SUPABASE_KEY='sb_publishable_KMi-Q7lZ-dCTPnqIhIogIA_wnw2rnpH';
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let currentUser=null, editingId=null, cachedProperties=[];
+const $=id=>document.getElementById(id);
+function msg(id,text,isError=false){$(id).textContent=text;$(id).style.color=isError?'#b42318':'#26734d'}
+async function signIn(){msg('loginStatus','جارٍ تسجيل الدخول…');const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){msg('loginStatus','تعذر الدخول: '+error.message,true);return}await startSession(data.user)}
+async function signOut(){await db.auth.signOut();currentUser=null;$('dashboard').classList.add('hidden');$('editor').classList.add('hidden');$('logout').classList.add('hidden');$('loginPanel').classList.remove('hidden')}
+async function startSession(user){currentUser=user;msg('loginStatus','');const {data:admin,error}=await db.from('admin_users').select('role').eq('user_id',user.id).maybeSingle();if(error||!admin||admin.role!=='admin'){await db.auth.signOut();msg('loginStatus','هذا الحساب ليس لديه صلاحية مدير. تواصل مع مسؤول الموقع.',true);return}$('loginPanel').classList.add('hidden');$('dashboard').classList.remove('hidden');$('logout').classList.remove('hidden');$('welcome').textContent='تم تسجيل الدخول: '+user.email;await loadProperties();await loadLeadsCount()}
+async function loadProperties(){msg('globalStatus','جارٍ تحميل العقارات…');const {data,error}=await db.from('properties').select('*').order('created_at',{ascending:false});if(error){msg('globalStatus','تعذر تحميل العقارات: '+error.message,true);return}cachedProperties=data||[];$('total').textContent=cachedProperties.length;$('available').textContent=cachedProperties.filter(p=>!p.status||p.status==='available').length;$('propertyRows').innerHTML=cachedProperties.map(p=>'<tr><td>'+esc(p.title||'بدون عنوان')+'</td><td>'+esc(p.property_type||'—')+' / '+(p.listing_type==='rent'?'إيجار':'بيع')+'</td><td>'+Number(p.price||0).toLocaleString('en-US')+' ج.م</td><td>'+esc(p.status||'available')+'</td><td><div class="actions"><button class="btn light" onclick="editProperty(\''+p.id+'\')">تعديل</button><button class="btn danger" onclick="deleteProperty(\''+p.id+'\')">حذف</button></div></td></tr>').join('')||'<tr><td colspan="5">لا توجد عقارات حتى الآن.</td></tr>';msg('globalStatus','')}
+async function loadLeadsCount(){const {count,error}=await db.from('leads').select('*',{count:'exact',head:true});$('leadsCount').textContent=error?'—':(count??0)}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function newProperty(){editingId=null;$('editorTitle').textContent='إضافة عقار جديد';['pTitle','pPrice','pAddress','pArea','pBeds','pBaths','pDescription'].forEach(id=>$(id).value='');$('pListing').value='sale';$('pStatus').value='available';$('pImages').value='';msg('editorStatus','');$('editor').classList.remove('hidden');$('editor').scrollIntoView({behavior:'smooth'})}
+function editProperty(id){const p=cachedProperties.find(x=>x.id===id);if(!p)return;editingId=id;$('editorTitle').textContent='تعديل العقار';$('pTitle').value=p.title||'';$('pPrice').value=p.price??'';$('pListing').value=p.listing_type||'sale';$('pType').value=p.property_type||'شقة';$('pAddress').value=p.address||'';$('pArea').value=p.area??'';$('pBeds').value=p.bedrooms??'';$('pBaths').value=p.bathrooms??'';$('pDescription').value=p.description||'';$('pStatus').value=p.status||'available';$('pImages').value='';msg('editorStatus','اترك اختيار الصور فارغًا للاحتفاظ بالصور الحالية.');$('editor').classList.remove('hidden');$('editor').scrollIntoView({behavior:'smooth'})}
+function closeEditor(){$('editor').classList.add('hidden')}
+async function saveProperty(){if(!$('pTitle').value.trim()){msg('editorStatus','اكتب عنوان العقار أولاً.',true);return}msg('editorStatus','جارٍ حفظ العقار…');let old=editingId?cachedProperties.find(p=>p.id===editingId):null;let images=old?.images||[];const files=Array.from($('pImages').files||[]);for(const f of files){if(f.size>5*1024*1024){msg('editorStatus','الصورة '+f.name+' أكبر من 5MB.',true);return}if(!['image/jpeg','image/png','image/webp'].includes(f.type)){msg('editorStatus','نوع صورة غير مسموح: '+f.name,true);return}const path=currentUser.id+'/'+Date.now()+'-'+f.name.replace(/[^\w.-]/g,'_');const {error:upErr}=await db.storage.from('property-images').upload(path,f,{contentType:f.type,upsert:false});if(upErr){msg('editorStatus','فشل رفع الصورة: '+upErr.message,true);return}const {data:urlData}=db.storage.from('property-images').getPublicUrl(path);images.push(urlData.publicUrl)}
+const payload={title:$('pTitle').value.trim(),price:$('pPrice').value?Number($('pPrice').value):null,listing_type:$('pListing').value,property_type:$('pType').value,address:$('pAddress').value.trim(),area:$('pArea').value?Number($('pArea').value):null,bedrooms:$('pBeds').value?Number($('pBeds').value):null,bathrooms:$('pBaths').value?Number($('pBaths').value):null,description:$('pDescription').value.trim(),status:$('pStatus').value,images,updated_at:new Date().toISOString()};
+let result;if(editingId)result=await db.from('properties').update(payload).eq('id',editingId);else result=await db.from('properties').insert({...payload,created_by:currentUser.id});if(result.error){msg('editorStatus','تعذر الحفظ: '+result.error.message,true);return}msg('editorStatus','تم الحفظ بنجاح.');closeEditor();await loadProperties()}
+async function deleteProperty(id){const p=cachedProperties.find(x=>x.id===id);if(!p||!confirm('هل أنت متأكد من حذف العقار: '+p.title+'؟'))return;const {error}=await db.from('properties').delete().eq('id',id);if(error){msg('globalStatus','تعذر الحذف: '+error.message,true);return}await loadProperties()}
+db.auth.getSession().then(({data})=>{if(data.session)startSession(data.session.user)});db.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'&&!currentUser)return;if(event==='SIGNED_OUT'){currentUser=null;$('dashboard').classList.add('hidden');$('loginPanel').classList.remove('hidden');$('logout').classList.add('hidden')}});
+</script>
+</body></html>
