@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -16,6 +17,16 @@
 <div class="field"><label>البريد الإلكتروني</label><input id="email" type="email" autocomplete="username" placeholder="name@example.com"></div>
 <div class="field"><label>كلمة المرور</label><input id="password" type="password" autocomplete="current-password"></div>
 <button class="btn gold" style="width:100%" onclick="signIn()">دخول</button><div id="loginStatus" class="status"></div></section>
+
+<section id="recoveryPanel" class="panel login hidden">
+<h1>تغيير كلمة المرور</h1>
+<p class="muted">اكتب كلمة المرور الجديدة مرتين لتأكيدها.</p>
+<div class="field"><label>كلمة المرور الجديدة</label><input id="newPassword" type="password" autocomplete="new-password" minlength="8" placeholder="8 أحرف على الأقل"></div>
+<div class="field"><label>تأكيد كلمة المرور</label><input id="confirmPassword" type="password" autocomplete="new-password" minlength="8"></div>
+<button class="btn gold" style="width:100%" onclick="updatePassword()">حفظ كلمة المرور الجديدة</button>
+<div id="recoveryStatus" class="status"></div>
+</section>
+
 <section id="dashboard" class="hidden">
 <div class="row" style="justify-content:space-between"><div><h1>لوحة التحكم</h1><div class="muted" id="welcome"></div></div><button class="btn gold" onclick="newProperty()">＋ إضافة عقار</button></div>
 <div class="stats"><div class="stat">إجمالي العقارات<strong id="total">0</strong></div><div class="stat">طلبات العملاء<strong id="leadsCount">—</strong></div><div class="stat">العقارات المتاحة<strong id="available">0</strong></div></div>
@@ -24,6 +35,7 @@
 <div class="table-wrap"><table><thead><tr><th>العقار</th><th>النوع</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="propertyRows"><tr><td colspan="5">جارٍ تحميل البيانات…</td></tr></tbody></table></div>
 </div>
 </section>
+
 <section id="editor" class="panel hidden" style="margin-top:18px">
 <h2 id="editorTitle">إضافة عقار</h2>
 <div class="formgrid">
@@ -47,22 +59,160 @@
 const SUPABASE_URL='https://lqycfhqmihobrjyycajr.supabase.co';
 const SUPABASE_KEY='sb_publishable_KMi-Q7lZ-dCTPnqIhIogIA_wnw2rnpH';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let currentUser=null, editingId=null, cachedProperties=[];
+let currentUser=null, editingId=null, cachedProperties=[], recoveryMode=false;
 const $=id=>document.getElementById(id);
 function msg(id,text,isError=false){$(id).textContent=text;$(id).style.color=isError?'#b42318':'#26734d'}
-async function signIn(){msg('loginStatus','جارٍ تسجيل الدخول…');const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){msg('loginStatus','تعذر الدخول: '+error.message,true);return}await startSession(data.user)}
-async function signOut(){await db.auth.signOut();currentUser=null;$('dashboard').classList.add('hidden');$('editor').classList.add('hidden');$('logout').classList.add('hidden');$('loginPanel').classList.remove('hidden')}
-async function startSession(user){currentUser=user;msg('loginStatus','');const {data:admin,error}=await db.from('admin_users').select('role').eq('user_id',user.id).maybeSingle();if(error||!admin||admin.role!=='admin'){await db.auth.signOut();msg('loginStatus','هذا الحساب ليس لديه صلاحية مدير. تواصل مع مسؤول الموقع.',true);return}$('loginPanel').classList.add('hidden');$('dashboard').classList.remove('hidden');$('logout').classList.remove('hidden');$('welcome').textContent='تم تسجيل الدخول: '+user.email;await loadProperties();await loadLeadsCount()}
-async function loadProperties(){msg('globalStatus','جارٍ تحميل العقارات…');const {data,error}=await db.from('properties').select('*').order('created_at',{ascending:false});if(error){msg('globalStatus','تعذر تحميل العقارات: '+error.message,true);return}cachedProperties=data||[];$('total').textContent=cachedProperties.length;$('available').textContent=cachedProperties.filter(p=>!p.status||p.status==='available').length;$('propertyRows').innerHTML=cachedProperties.map(p=>'<tr><td>'+esc(p.title||'بدون عنوان')+'</td><td>'+esc(p.property_type||'—')+' / '+(p.listing_type==='rent'?'إيجار':'بيع')+'</td><td>'+Number(p.price||0).toLocaleString('en-US')+' ج.م</td><td>'+esc(p.status||'available')+'</td><td><div class="actions"><button class="btn light" onclick="editProperty(\''+p.id+'\')">تعديل</button><button class="btn danger" onclick="deleteProperty(\''+p.id+'\')">حذف</button></div></td></tr>').join('')||'<tr><td colspan="5">لا توجد عقارات حتى الآن.</td></tr>';msg('globalStatus','')}
-async function loadLeadsCount(){const {count,error}=await db.from('leads').select('*',{count:'exact',head:true});$('leadsCount').textContent=error?'—':(count??0)}
+
+function showRecoveryPanel(){
+ recoveryMode=true;
+ $('loginPanel').classList.add('hidden');
+ $('dashboard').classList.add('hidden');
+ $('editor').classList.add('hidden');
+ $('logout').classList.add('hidden');
+ $('recoveryPanel').classList.remove('hidden');
+}
+
+async function signIn(){
+ msg('loginStatus','جارٍ تسجيل الدخول…');
+ const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+ if(error){msg('loginStatus','تعذر الدخول: '+error.message,true);return}
+ await startSession(data.user);
+}
+
+async function updatePassword(){
+ const password=$('newPassword').value;
+ const confirm=$('confirmPassword').value;
+ if(password.length<8){msg('recoveryStatus','كلمة المرور لازم تكون 8 أحرف على الأقل.',true);return}
+ if(password!==confirm){msg('recoveryStatus','كلمتا المرور غير متطابقتين.',true);return}
+ msg('recoveryStatus','جارٍ تحديث كلمة المرور…');
+ const {error}=await db.auth.updateUser({password});
+ if(error){msg('recoveryStatus','تعذر تغيير كلمة المرور: '+error.message,true);return}
+ msg('recoveryStatus','تم تغيير كلمة المرور بنجاح. جاري تحويلك لتسجيل الدخول…');
+ recoveryMode=false;
+ await db.auth.signOut();
+ $('recoveryPanel').classList.add('hidden');
+ $('loginPanel').classList.remove('hidden');
+ $('newPassword').value='';
+ $('confirmPassword').value='';
+ msg('loginStatus','تم تحديث كلمة المرور. سجّل الدخول الآن.');
+}
+
+async function signOut(){
+ await db.auth.signOut();
+ currentUser=null;
+ $('dashboard').classList.add('hidden');
+ $('editor').classList.add('hidden');
+ $('logout').classList.add('hidden');
+ $('loginPanel').classList.remove('hidden');
+}
+
+async function startSession(user){
+ if(recoveryMode)return;
+ currentUser=user;
+ msg('loginStatus','');
+ const {data:admin,error}=await db.from('admin_users').select('role').eq('user_id',user.id).maybeSingle();
+ if(error||!admin||admin.role!=='admin'){
+  await db.auth.signOut();
+  msg('loginStatus','هذا الحساب ليس لديه صلاحية مدير. تواصل مع مسؤول الموقع.',true);
+  return;
+ }
+ $('loginPanel').classList.add('hidden');
+ $('recoveryPanel').classList.add('hidden');
+ $('dashboard').classList.remove('hidden');
+ $('logout').classList.remove('hidden');
+ $('welcome').textContent='تم تسجيل الدخول: '+user.email;
+ await loadProperties();
+ await loadLeadsCount();
+}
+
+async function loadProperties(){
+ msg('globalStatus','جارٍ تحميل العقارات…');
+ const {data,error}=await db.from('properties').select('*').order('created_at',{ascending:false});
+ if(error){msg('globalStatus','تعذر تحميل العقارات: '+error.message,true);return}
+ cachedProperties=data||[];
+ $('total').textContent=cachedProperties.length;
+ $('available').textContent=cachedProperties.filter(p=>!p.status||p.status==='available').length;
+ $('propertyRows').innerHTML=cachedProperties.map(p=>'<tr><td>'+esc(p.title||'بدون عنوان')+'</td><td>'+esc(p.property_type||'—')+' / '+(p.listing_type==='rent'?'إيجار':'بيع')+'</td><td>'+Number(p.price||0).toLocaleString('en-US')+' ج.م</td><td>'+esc(p.status||'available')+'</td><td><div class="actions"><button class="btn light" onclick="editProperty(\''+p.id+'\')">تعديل</button><button class="btn danger" onclick="deleteProperty(\''+p.id+'\')">حذف</button></div></td></tr>').join('')||'<tr><td colspan="5">لا توجد عقارات حتى الآن.</td></tr>';
+ msg('globalStatus','');
+}
+
+async function loadLeadsCount(){
+ const {count,error}=await db.from('leads').select('*',{count:'exact',head:true});
+ $('leadsCount').textContent=error?'—':(count??0);
+}
+
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function newProperty(){editingId=null;$('editorTitle').textContent='إضافة عقار جديد';['pTitle','pPrice','pAddress','pArea','pBeds','pBaths','pDescription'].forEach(id=>$(id).value='');$('pListing').value='sale';$('pStatus').value='available';$('pImages').value='';msg('editorStatus','');$('editor').classList.remove('hidden');$('editor').scrollIntoView({behavior:'smooth'})}
-function editProperty(id){const p=cachedProperties.find(x=>x.id===id);if(!p)return;editingId=id;$('editorTitle').textContent='تعديل العقار';$('pTitle').value=p.title||'';$('pPrice').value=p.price??'';$('pListing').value=p.listing_type||'sale';$('pType').value=p.property_type||'شقة';$('pAddress').value=p.address||'';$('pArea').value=p.area??'';$('pBeds').value=p.bedrooms??'';$('pBaths').value=p.bathrooms??'';$('pDescription').value=p.description||'';$('pStatus').value=p.status||'available';$('pImages').value='';msg('editorStatus','اترك اختيار الصور فارغًا للاحتفاظ بالصور الحالية.');$('editor').classList.remove('hidden');$('editor').scrollIntoView({behavior:'smooth'})}
+
+function newProperty(){
+ editingId=null;
+ $('editorTitle').textContent='إضافة عقار جديد';
+ ['pTitle','pPrice','pAddress','pArea','pBeds','pBaths','pDescription'].forEach(id=>$(id).value='');
+ $('pListing').value='sale';$('pStatus').value='available';$('pImages').value='';
+ msg('editorStatus','');
+ $('editor').classList.remove('hidden');
+ $('editor').scrollIntoView({behavior:'smooth'});
+}
+
+function editProperty(id){
+ const p=cachedProperties.find(x=>x.id===id);if(!p)return;
+ editingId=id;$('editorTitle').textContent='تعديل العقار';
+ $('pTitle').value=p.title||'';$('pPrice').value=p.price??'';
+ $('pListing').value=p.listing_type||'sale';$('pType').value=p.property_type||'شقة';
+ $('pAddress').value=p.address||'';$('pArea').value=p.area??'';
+ $('pBeds').value=p.bedrooms??'';$('pBaths').value=p.bathrooms??'';
+ $('pDescription').value=p.description||'';$('pStatus').value=p.status||'available';
+ $('pImages').value='';msg('editorStatus','اترك اختيار الصور فارغًا للاحتفاظ بالصور الحالية.');
+ $('editor').classList.remove('hidden');$('editor').scrollIntoView({behavior:'smooth'});
+}
+
 function closeEditor(){$('editor').classList.add('hidden')}
-async function saveProperty(){if(!$('pTitle').value.trim()){msg('editorStatus','اكتب عنوان العقار أولاً.',true);return}msg('editorStatus','جارٍ حفظ العقار…');let old=editingId?cachedProperties.find(p=>p.id===editingId):null;let images=old?.images||[];const files=Array.from($('pImages').files||[]);for(const f of files){if(f.size>5*1024*1024){msg('editorStatus','الصورة '+f.name+' أكبر من 5MB.',true);return}if(!['image/jpeg','image/png','image/webp'].includes(f.type)){msg('editorStatus','نوع صورة غير مسموح: '+f.name,true);return}const path=currentUser.id+'/'+Date.now()+'-'+f.name.replace(/[^\w.-]/g,'_');const {error:upErr}=await db.storage.from('property-images').upload(path,f,{contentType:f.type,upsert:false});if(upErr){msg('editorStatus','فشل رفع الصورة: '+upErr.message,true);return}const {data:urlData}=db.storage.from('property-images').getPublicUrl(path);images.push(urlData.publicUrl)}
-const payload={title:$('pTitle').value.trim(),price:$('pPrice').value?Number($('pPrice').value):null,listing_type:$('pListing').value,property_type:$('pType').value,address:$('pAddress').value.trim(),area:$('pArea').value?Number($('pArea').value):null,bedrooms:$('pBeds').value?Number($('pBeds').value):null,bathrooms:$('pBaths').value?Number($('pBaths').value):null,description:$('pDescription').value.trim(),status:$('pStatus').value,images,updated_at:new Date().toISOString()};
-let result;if(editingId)result=await db.from('properties').update(payload).eq('id',editingId);else result=await db.from('properties').insert({...payload,created_by:currentUser.id});if(result.error){msg('editorStatus','تعذر الحفظ: '+result.error.message,true);return}msg('editorStatus','تم الحفظ بنجاح.');closeEditor();await loadProperties()}
-async function deleteProperty(id){const p=cachedProperties.find(x=>x.id===id);if(!p||!confirm('هل أنت متأكد من حذف العقار: '+p.title+'؟'))return;const {error}=await db.from('properties').delete().eq('id',id);if(error){msg('globalStatus','تعذر الحذف: '+error.message,true);return}await loadProperties()}
-db.auth.getSession().then(({data})=>{if(data.session)startSession(data.session.user)});db.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'&&!currentUser)return;if(event==='SIGNED_OUT'){currentUser=null;$('dashboard').classList.add('hidden');$('loginPanel').classList.remove('hidden');$('logout').classList.add('hidden')}});
+
+async function saveProperty(){
+ if(!$('pTitle').value.trim()){msg('editorStatus','اكتب عنوان العقار أولاً.',true);return}
+ msg('editorStatus','جارٍ حفظ العقار…');
+ let old=editingId?cachedProperties.find(p=>p.id===editingId):null;
+ let images=old?.images||[];
+ const files=Array.from($('pImages').files||[]);
+ for(const f of files){
+  if(f.size>5*1024*1024){msg('editorStatus','الصورة '+f.name+' أكبر من 5MB.',true);return}
+  if(!['image/jpeg','image/png','image/webp'].includes(f.type)){msg('editorStatus','نوع صورة غير مسموح: '+f.name,true);return}
+  const path=currentUser.id+'/'+Date.now()+'-'+f.name.replace(/[^\w.-]/g,'_');
+  const {error:upErr}=await db.storage.from('property-images').upload(path,f,{contentType:f.type,upsert:false});
+  if(upErr){msg('editorStatus','فشل رفع الصورة: '+upErr.message,true);return}
+  const {data:urlData}=db.storage.from('property-images').getPublicUrl(path);
+  images.push(urlData.publicUrl);
+ }
+ const payload={title:$('pTitle').value.trim(),price:$('pPrice').value?Number($('pPrice').value):null,listing_type:$('pListing').value,property_type:$('pType').value,address:$('pAddress').value.trim(),area:$('pArea').value?Number($('pArea').value):null,bedrooms:$('pBeds').value?Number($('pBeds').value):null,bathrooms:$('pBaths').value?Number($('pBaths').value):null,description:$('pDescription').value.trim(),status:$('pStatus').value,images,updated_at:new Date().toISOString()};
+ let result;
+ if(editingId)result=await db.from('properties').update(payload).eq('id',editingId);
+ else result=await db.from('properties').insert({...payload,created_by:currentUser.id});
+ if(result.error){msg('editorStatus','تعذر الحفظ: '+result.error.message,true);return}
+ msg('editorStatus','تم الحفظ بنجاح.');closeEditor();await loadProperties();
+}
+
+async function deleteProperty(id){
+ const p=cachedProperties.find(x=>x.id===id);
+ if(!p||!confirm('هل أنت متأكد من حذف العقار: '+p.title+'؟'))return;
+ const {error}=await db.from('properties').delete().eq('id',id);
+ if(error){msg('globalStatus','تعذر الحذف: '+error.message,true);return}
+ await loadProperties();
+}
+
+db.auth.onAuthStateChange((event,session)=>{
+ if(event==='PASSWORD_RECOVERY'){showRecoveryPanel();return}
+ if(event==='SIGNED_OUT'&&!recoveryMode){
+  currentUser=null;
+  $('dashboard').classList.add('hidden');
+  $('editor').classList.add('hidden');
+  $('loginPanel').classList.remove('hidden');
+  $('logout').classList.add('hidden');
+ }
+});
+db.auth.getSession().then(({data,error})=>{
+ if(error){msg('loginStatus','تعذر التحقق من جلسة الدخول: '+error.message,true);return}
+ if(window.location.hash.includes('type=recovery')){showRecoveryPanel();return}
+ if(data.session&&!recoveryMode)startSession(data.session.user);
+});
 </script>
-</body></html>
+</body>
+</html>
