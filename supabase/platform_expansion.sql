@@ -186,9 +186,9 @@ create policy "Participants read participant list" on public.chat_participants f
 drop policy if exists "Users join threads they create" on public.chat_participants;
 create policy "Users join threads they create" on public.chat_participants for insert to authenticated with check (user_id=auth.uid() and public.bhg_can_join_created_thread(thread_id));
 drop policy if exists "Participants read messages" on public.chat_messages;
-create policy "Participants read messages" on public.chat_messages for select to authenticated using (exists(select 1 from public.chat_participants cp where cp.thread_id=thread_id and cp.user_id=auth.uid()));
+create policy "Participants read messages" on public.chat_messages for select to authenticated using (exists(select 1 from public.chat_participants cp where cp.thread_id=public.chat_messages.thread_id and cp.user_id=auth.uid()));
 drop policy if exists "Participants send messages" on public.chat_messages;
-create policy "Participants send messages" on public.chat_messages for insert to authenticated with check (sender_id=auth.uid() and exists(select 1 from public.chat_participants cp where cp.thread_id=thread_id and cp.user_id=auth.uid()));
+create policy "Participants send messages" on public.chat_messages for insert to authenticated with check (sender_id=auth.uid() and exists(select 1 from public.chat_participants cp where cp.thread_id=public.chat_messages.thread_id and cp.user_id=auth.uid()));
 drop policy if exists "Participants create customer threads" on public.chat_threads;
 create policy "Participants create customer threads" on public.chat_threads for insert to authenticated with check (created_by=auth.uid() and thread_type in ('customer','sales'));
 drop policy if exists "Users read their orders" on public.sales_orders;
@@ -197,7 +197,9 @@ drop policy if exists "Users create their own inquiries" on public.sales_orders;
 create policy "Users create their own inquiries" on public.sales_orders for insert to authenticated with check (buyer_id=auth.uid() and order_type='inquiry' and status='new');
 
 grant select on public.sponsors,public.subscription_plans to anon,authenticated;
-grant select,insert,update on public.platform_profiles to authenticated;
+grant select,insert on public.platform_profiles to authenticated;
+revoke update on public.platform_profiles from authenticated;
+grant update (display_name, phone, updated_at) on public.platform_profiles to authenticated;
 grant select on public.user_subscriptions to authenticated;
 grant select,insert on public.chat_threads to authenticated;
 grant select,insert on public.chat_participants to authenticated;
