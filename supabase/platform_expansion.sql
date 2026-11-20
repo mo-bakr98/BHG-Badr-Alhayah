@@ -154,9 +154,9 @@ language sql
 security definer
 set search_path = public
 stable
-as $
+as $$ 
   select exists(select 1 from public.chat_threads t where t.id=p_thread_id and t.created_by=auth.uid());
-$;
+$$;
 grant execute on function public.bhg_can_join_created_thread(uuid) to authenticated;
 
 drop policy if exists "Users read own created threads" on public.chat_threads;
