@@ -26,6 +26,8 @@ create table if not exists public.platform_profiles (
   updated_at timestamptz not null default now()
 );
 
+alter table public.platform_profiles add column if not exists role_key text check (role_key in ('sales','marketing','support','manager'));
+
 create table if not exists public.sponsors (
   id uuid primary key default gen_random_uuid(),
   company_name text not null,
