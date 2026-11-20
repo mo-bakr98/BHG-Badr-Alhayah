@@ -91,7 +91,7 @@ applySettings(readSettings());
  const escHtml=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
  const {data,error}=await client.from('properties').select('*').order('created_at',{ascending:false});
  if(error){grid.innerHTML='<p style="grid-column:1/-1;text-align:center;color:#64748b">تعذر تحميل العقارات حاليًا. حاول مرة أخرى لاحقًا.</p>';return;}
- const items=(data||[]).filter(p=>!p.status||p.status==='available');
+ const items=(data||[]);
  if(!items.length){grid.innerHTML='<p style="grid-column:1/-1;text-align:center;color:#64748b">لا توجد عقارات منشورة حاليًا. تابعنا قريبًا.</p>';return;}
  grid.innerHTML=items.map(p=>{
   const kind=p.listing_type==='rent'?'rent':'sale';
