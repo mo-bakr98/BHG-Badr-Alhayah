@@ -20,6 +20,7 @@ create table if not exists public.platform_profiles (
   display_name text,
   phone text,
   account_type text not null default 'customer' check (account_type in ('customer','seller','employee')),
+  role_key text check (role_key in ('sales','marketing','support','manager')),
   active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
