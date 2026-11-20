@@ -146,6 +146,19 @@ create policy "BHG admins manage messages" on public.chat_messages for all to au
 drop policy if exists "BHG admins manage sales" on public.sales_orders;
 create policy "BHG admins manage sales" on public.sales_orders for all to authenticated using (public.is_bhg_admin()) with check (public.is_bhg_admin());
 
+create or replace function public.bhg_can_join_created_thread(p_thread_id uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $
+  select exists(select 1 from public.chat_threads t where t.id=p_thread_id and t.created_by=auth.uid());
+$;
+grant execute on function public.bhg_can_join_created_thread(uuid) to authenticated;
+
+drop policy if exists "Users read own created threads" on public.chat_threads;
+create policy "Users read own created threads" on public.chat_threads for select to authenticated using (created_by=auth.uid());
 -- Users can view and update only their own profile (role/account type is not user-editable).
 drop policy if exists "Users read own profile" on public.platform_profiles;
 create policy "Users read own profile" on public.platform_profiles for select to authenticated using (user_id=auth.uid() or public.is_bhg_admin());
@@ -170,7 +183,7 @@ create policy "Participants read threads" on public.chat_threads for select to a
 drop policy if exists "Participants read participant list" on public.chat_participants;
 create policy "Participants read participant list" on public.chat_participants for select to authenticated using (user_id=auth.uid() or public.is_bhg_admin());
 drop policy if exists "Users join threads they create" on public.chat_participants;
-create policy "Users join threads they create" on public.chat_participants for insert to authenticated with check (user_id=auth.uid() and exists(select 1 from public.chat_threads t where t.id=thread_id and t.created_by=auth.uid()));
+create policy "Users join threads they create" on public.chat_participants for insert to authenticated with check (user_id=auth.uid() and public.bhg_can_join_created_thread(thread_id));
 drop policy if exists "Participants read messages" on public.chat_messages;
 create policy "Participants read messages" on public.chat_messages for select to authenticated using (exists(select 1 from public.chat_participants cp where cp.thread_id=thread_id and cp.user_id=auth.uid()));
 drop policy if exists "Participants send messages" on public.chat_messages;
