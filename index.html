@@ -98,9 +98,9 @@ applySettings(readSettings());
   const kindLabel=kind==='rent'?'للإيجار':'للبيع';
   const image=Array.isArray(p.images)&&p.images.length?p.images[0]:'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80';
   const price=p.price?Number(p.price).toLocaleString('en-US')+' جنيه':'السعر عند التواصل';
-  const specs=[p.bedrooms?('🛏 '+p.bedrooms+' غرف'):null,p.bathrooms?('🛁 '+p.bathrooms+' حمام'):null,p.area?('📐 '+p.area+' م²'):null].filter(Boolean).join('');
+  const specs=[p.bedrooms?('🛏 '+p.bedrooms+' غرف'):null,p.bathrooms?('🛁 '+p.bathrooms+' حمام'):null,p.area?('📐 '+p.area+' م²'):null].filter(Boolean).join(' | '); const statusLabel=p.status==='sold'?'تم البيع':p.status==='reserved'?'محجوز':p.status==='rented'?'تم التأجير':'متاح';
   const area=escHtml(p.address||'مدينة بدر');
-  return '<article class="card" data-type="'+kind+'" data-category="'+escHtml(p.property_type||'')+'" data-area="'+area+'" data-price="'+Number(p.price||0)+'"><div class="photo"><img src="'+escHtml(image)+'" alt="'+escHtml(p.title)+'" loading="lazy"><span class="tag">'+kindLabel+'</span></div><div class="body"><h3>'+escHtml(p.title)+'</h3><div class="location">📍 '+area+'</div><div class="price">'+price+(kind==='rent'?' / شهريًا':'')+'</div><div class="specs">'+specs+'</div><div class="card-actions"><a href="#contact">تفاصيل</a><a href="#contact">اسأل عنها</a></div></div></article>';
+  return '<article class="card" data-type="'+kind+'" data-category="'+escHtml(p.property_type||'')+'" data-area="'+area+'" data-price="'+Number(p.price||0)+'"><div class="photo"><img src="'+escHtml(image)+'" alt="'+escHtml(p.title)+'" loading="lazy"><span class="tag">'+kindLabel+'</span><span class="tag" style="top:auto;bottom:12px;background:#fff">'+statusLabel+'</span></div><div class="body"><h3>'+escHtml(p.title)+'</h3><div class="location">📍 '+area+'</div><div class="price">'+price+(kind==='rent'?' / شهريًا':'')+'</div><div class="specs">'+specs+'</div><div class="card-actions"><a href="#contact">تفاصيل</a><a href="#contact">اسأل عنها</a></div></div></article>';
  }).join('');
 })();
 </script>
