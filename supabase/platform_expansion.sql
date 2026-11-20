@@ -160,6 +160,8 @@ drop policy if exists "Public read active plans" on public.subscription_plans;
 create policy "Public read active plans" on public.subscription_plans for select to anon,authenticated using (active=true);
 
 -- Members see their subscriptions; thread members can access chat.
+drop policy if exists "Users request their own subscription" on public.user_subscriptions;
+create policy "Users request their own subscription" on public.user_subscriptions for insert to authenticated with check (user_id=auth.uid() and status='pending' and starts_at is null and ends_at is null);
 drop policy if exists "Users read own subscriptions" on public.user_subscriptions;
 create policy "Users read own subscriptions" on public.user_subscriptions for select to authenticated using (user_id=auth.uid());
 drop policy if exists "Participants read threads" on public.chat_threads;
