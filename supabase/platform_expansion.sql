@@ -167,7 +167,6 @@ create policy "Users read own profile" on public.platform_profiles for select to
 drop policy if exists "Users insert own customer profile" on public.platform_profiles;
 create policy "Users insert own customer profile" on public.platform_profiles for insert to authenticated with check (user_id=auth.uid() and account_type='customer' and active=true);
 drop policy if exists "Users update own profile details" on public.platform_profiles;
-create policy "Users update own profile details" on public.platform_profiles for update to authenticated using (user_id=auth.uid()) with check (user_id=auth.uid() and account_type='customer');
 
 -- Public sponsors/plans are read-only and limited to active items.
 drop policy if exists "Public read active sponsors" on public.sponsors;
