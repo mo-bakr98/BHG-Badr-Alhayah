@@ -205,7 +205,8 @@ async function saveProperty(){
  let old=editingId?cachedProperties.find(p=>p.id===editingId):null;
  let images=old?.images||[];
  const files=Array.from($('pImages').files||[]);
- for(const f of files){
+ for(let fileIndex=0;fileIndex<files.length;fileIndex++){
+  const f=files[fileIndex];
   if(f.size>5*1024*1024){msg('editorStatus','الصورة '+f.name+' أكبر من 5MB.',true);return}
   if(!['image/jpeg','image/png','image/webp'].includes(f.type)){msg('editorStatus','نوع صورة غير مسموح: '+f.name,true);return}
   const path=currentUser.id+'/'+Date.now()+'-'+f.name.replace(/[^\w.-]/g,'_');
