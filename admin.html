@@ -164,7 +164,7 @@ async function loadProperties(){
  cachedProperties=data||[];
  $('total').textContent=cachedProperties.length;
  $('available').textContent=cachedProperties.filter(p=>!p.status||p.status==='available').length;
- $('propertyRows').innerHTML=cachedProperties.map(p=>'<tr><td>'+esc(p.title||'بدون عنوان')+'</td><td>'+esc(p.property_type||'—')+' / '+(p.listing_type==='rent'?'إيجار':'بيع')+'</td><td>'+Number(p.price||0).toLocaleString('en-US')+' ج.م</td><td>'+esc(p.status||'available')+'</td><td><div class="actions"><button class="btn light" onclick="editProperty(\''+p.id+'\')">تعديل</button><button class="btn danger" onclick="deleteProperty(\''+p.id+'\')">حذف</button></div></td></tr>').join('')||'<tr><td colspan="5">لا توجد عقارات حتى الآن.</td></tr>';
+ $('propertyRows').innerHTML=cachedProperties.map(p=>{const statusLabels={available:'متاح',reserved:'محجوز',sold:'تم البيع',rented:'تم التأجير'};return '<tr><td>'+esc(p.title||'بدون عنوان')+'</td><td>'+esc(p.property_type||'—')+' / '+(p.listing_type==='rent'?'إيجار':'بيع')+'</td><td>'+Number(p.price||0).toLocaleString('en-US')+' ج.م</td><td>'+esc(statusLabels[p.status]||p.status||'متاح')+'</td><td><div class="actions"><button class="btn light" onclick="editProperty(\''+p.id+'\')">تعديل</button><button class="btn danger" onclick="deleteProperty(\''+p.id+'\')">حذف</button></div></td></tr>'}).join('')||'<tr><td colspan="5">لا توجد عقارات حتى الآن.</td></tr>';
  msg('globalStatus','');
 }
 
