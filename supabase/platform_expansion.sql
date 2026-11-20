@@ -165,7 +165,9 @@ create policy "Users read own subscriptions" on public.user_subscriptions for se
 drop policy if exists "Participants read threads" on public.chat_threads;
 create policy "Participants read threads" on public.chat_threads for select to authenticated using (exists(select 1 from public.chat_participants cp where cp.thread_id=id and cp.user_id=auth.uid()));
 drop policy if exists "Participants read participant list" on public.chat_participants;
-create policy "Participants read participant list" on public.chat_participants for select to authenticated using (user_id=auth.uid() or exists(select 1 from public.chat_participants cp where cp.thread_id=thread_id and cp.user_id=auth.uid()));
+create policy "Participants read participant list" on public.chat_participants for select to authenticated using (user_id=auth.uid() or public.is_bhg_admin());
+drop policy if exists "Users join threads they create" on public.chat_participants;
+create policy "Users join threads they create" on public.chat_participants for insert to authenticated with check (user_id=auth.uid() and exists(select 1 from public.chat_threads t where t.id=thread_id and t.created_by=auth.uid()));
 drop policy if exists "Participants read messages" on public.chat_messages;
 create policy "Participants read messages" on public.chat_messages for select to authenticated using (exists(select 1 from public.chat_participants cp where cp.thread_id=thread_id and cp.user_id=auth.uid()));
 drop policy if exists "Participants send messages" on public.chat_messages;
