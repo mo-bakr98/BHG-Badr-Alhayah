@@ -36,7 +36,14 @@ Deno.serve(async (req) => {
     const { data: invited, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, { data: { display_name: displayName, account_type: "employee", role_key: roleKey } });
     if (inviteError) return new Response(JSON.stringify({ error: inviteError.message }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
     const { error: profileError } = await adminClient.from("platform_profiles").upsert({ user_id: invited.user.id, display_name: displayName, account_type: "employee", role_key: roleKey, active: true });
-    if (profileError) return new Response(JSON.stringify({ error: "Invitation sent but profile save failed: " + profileError.message }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
+    if (profileError) {
+      // Roll back the invited auth user if their employee profile could not be saved.
+      const { error: rollbackError } = await adminClient.auth.admin.deleteUser(invited.user.id);
+      const message = rollbackError
+        ? "Profile save failed: " + profileError.message + ". Rollback failed: " + rollbackError.message
+        : "Profile save failed: " + profileError.message + ". Invitation user was rolled back.";
+      return new Response(JSON.stringify({ error: message }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
+    }
     return new Response(JSON.stringify({ invited: true, user_id: invited.user.id }), { status: 200, headers: { ...cors, "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ error: e?.message || "Unexpected error" }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
