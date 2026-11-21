@@ -15,11 +15,18 @@
 .settings-box{background:#fff;color:#182838;width:min(620px,100%);max-height:92vh;overflow:auto;border-radius:18px;padding:22px;box-shadow:0 20px 60px #0005}
 .settings-box h2{margin:0 0 14px}.settings-box label{display:block;font-weight:700;margin:12px 0 5px}.settings-box input,.settings-box textarea{width:100%;border:1px solid #dbe3eb;border-radius:10px;padding:11px;font:inherit}.settings-actions{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}.settings-actions button{border:0;border-radius:10px;padding:11px 16px;font:inherit;font-weight:700;cursor:pointer;background:#10243a;color:#fff}.settings-actions .secondary{background:#e8edf2;color:#1a2d40}.logo-preview{max-height:80px;max-width:180px;object-fit:contain;margin:8px 0;display:none}
 @media(max-width:600px){.settings-box{padding:16px}.settings-btn{right:12px;bottom:12px}}
-#homepageAdBannerItems .home-ad{display:block;position:relative;overflow:hidden;border-radius:18px;background:#dbe4ec;box-shadow:0 8px 28px #10243a18;line-height:0}
-#homepageAdBannerItems .home-ad img{display:block;width:100%;height:clamp(170px,24vw,330px);object-fit:cover}
-#homepageAdBannerItems .home-ad .ad-caption{position:absolute;right:22px;bottom:18px;background:#10243acc;color:#fff;padding:9px 15px;border-radius:10px;font-weight:700;line-height:1.5;max-width:80%}
+/* Premium, large editorial ad banners */
+#homepageAdBanner{padding:34px 4.5%!important;background:linear-gradient(135deg,#f4f6f8,#e8edf2)!important}
+#homepageAdBannerItems{max-width:1500px!important;gap:24px!important}
+#homepageAdBannerItems .home-ad{display:block;position:relative;overflow:hidden;border-radius:24px;background:#dbe4ec;box-shadow:0 16px 42px #10243a18;line-height:0;isolation:isolate;transition:transform .25s ease,box-shadow .25s ease;min-height:260px}
+#homepageAdBannerItems .home-ad:hover{transform:translateY(-3px);box-shadow:0 22px 52px #10243a26}
+#homepageAdBannerItems .home-ad:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,20,34,.03) 35%,rgba(8,20,34,.18) 100%);pointer-events:none}
+#homepageAdBannerItems .home-ad img{display:block;width:100%;height:clamp(280px,32vw,440px);object-fit:cover;transition:transform .5s ease}
+#homepageAdBannerItems .home-ad:hover img{transform:scale(1.025)}
+#homepageAdBannerItems .home-ad .ad-caption{position:absolute;right:clamp(18px,4vw,48px);bottom:clamp(18px,3vw,36px);z-index:2;background:rgba(16,36,58,.88);backdrop-filter:blur(8px);color:#fff;padding:12px 20px;border-radius:13px;font-weight:700;line-height:1.65;max-width:min(70%,620px);font-size:clamp(14px,1.4vw,18px);box-shadow:0 8px 25px #0002}
 #homepageAdBannerItems .home-ad.no-link{cursor:default}
-@media(max-width:600px){#homepageAdBanner{padding:14px 4%}#homepageAdBannerItems .home-ad{border-radius:12px}#homepageAdBannerItems .home-ad img{height:190px}#homepageAdBannerItems .home-ad .ad-caption{right:10px;bottom:10px;font-size:13px;padding:6px 10px}}
+@media(max-width:900px){#homepageAdBanner{padding:24px 4%!important}#homepageAdBannerItems .home-ad img{height:clamp(240px,42vw,340px)}}
+@media(max-width:600px){#homepageAdBanner{padding:18px 4%!important}#homepageAdBannerItems{gap:15px!important}#homepageAdBannerItems .home-ad{border-radius:16px;min-height:210px}#homepageAdBannerItems .home-ad img{height:230px}#homepageAdBannerItems .home-ad .ad-caption{right:12px;bottom:12px;font-size:13px;padding:8px 12px;max-width:88%}}
 
 #sponsorGrid .card,#planGrid .card{min-height:160px}#planGrid .body ul{padding-right:20px;line-height:1.9}#sponsors .card-actions a,#plans .card-actions a{cursor:pointer}
 </style>
