@@ -25,16 +25,24 @@ Deno.serve(async (req) => {
     if (adminError || adminRecord?.role !== "admin") return new Response(JSON.stringify({ error: "Admins only" }), { status: 403, headers: { ...cors, "Content-Type": "application/json" } });
 
     const body = await req.json();
-    const email = String(body.email || "").trim().toLowerCase();
+    const username = String(body.username || "").trim().toLowerCase();
+    const email = username + "@staff.bhg.local";
+    const password = String(body.password || "");
     const displayName = String(body.display_name || "").trim();
     const roleKey = String(body.role_key || "sales").trim();
     const allowedRoles = ["sales", "marketing", "support", "manager"];
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !displayName || !allowedRoles.includes(roleKey)) {
-      return new Response(JSON.stringify({ error: "Invalid email, name, or employee role" }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
+    if (!/^[a-z0-9._-]{3,32}$/.test(username) || password.length < 8 || !displayName || !allowedRoles.includes(roleKey)) {
+      return new Response(JSON.stringify({ error: "Invalid username, password, name, or employee role" }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
     }
 
-    const { data: invited, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, { data: { display_name: displayName, account_type: "employee", role_key: roleKey } });
-    if (inviteError) return new Response(JSON.stringify({ error: inviteError.message }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
+    const { data: created, error: createError } = await adminClient.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { display_name: displayName, account_type: "employee", role_key: roleKey, username }
+    });
+    if (createError) return new Response(JSON.stringify({ error: createError.message }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
+    const invited = created;
     const { error: profileError } = await adminClient.from("platform_profiles").upsert({ user_id: invited.user.id, display_name: displayName, account_type: "employee", role_key: roleKey, active: true });
     if (profileError) {
       // Roll back the invited auth user if their employee profile could not be saved.
@@ -44,7 +52,7 @@ Deno.serve(async (req) => {
         : "Profile save failed: " + profileError.message + ". Invitation user was rolled back.";
       return new Response(JSON.stringify({ error: message }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
     }
-    return new Response(JSON.stringify({ invited: true, user_id: invited.user.id }), { status: 200, headers: { ...cors, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ created: true, user_id: invited.user.id, username }), { status: 200, headers: { ...cors, "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ error: e?.message || "Unexpected error" }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
   }
