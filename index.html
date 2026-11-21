@@ -48,6 +48,20 @@
 .section#sale .section-head{max-width:1450px;margin-inline:auto;margin-bottom:30px}
 .section#sale h2{font-size:clamp(26px,3vw,36px);letter-spacing:-.3px}
 @media(max-width:700px){#propertyGrid{gap:18px!important}#propertyGrid .card{flex-direction:column!important;min-height:unset}#propertyGrid .card .photo{width:100%;flex:0 0 auto;height:260px!important;min-height:260px}#propertyGrid .card .photo img{height:260px;min-height:260px}#propertyGrid .card .body{padding:20px!important}#propertyGrid .card .body h3{font-size:21px}#propertyGrid .card .price{font-size:25px}#propertyGrid .card .card-actions{margin-top:12px}}
+/* BHG palette and centered search */
+:root{--navy:#001d39;--blue:#0a4174;--gold:#6ea2b3;--paper:#bdd8e9;--ink:#001d39;--muted:#49769f}
+body{background:#edf5fa;color:#001d39}.top{background:#001d39!important}.brand span{color:#7bbde8}.nav a:hover{color:#7bbde8}
+.hero{background:linear-gradient(135deg,rgba(0,29,57,.94),rgba(10,65,116,.78),rgba(73,118,159,.45)),url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1800&q=85') center/cover!important;justify-content:center;text-align:center;min-height:520px;padding:55px 5%}
+.hero-content{max-width:1150px;width:100%;margin:0 auto}.hero h1{margin:14px auto;max-width:900px}.hero p{margin:12px auto;max-width:680px}.hero .eyebrow{color:#bdd8e9}
+.search{max-width:1100px;width:100%;margin:32px auto 0;grid-template-columns:repeat(4,minmax(0,1fr)) auto;background:rgba(237,245,250,.96);border:1px solid #bdd8e9;border-radius:22px;padding:14px;box-shadow:0 22px 55px #001d3940}
+.search select,.search input{border:1px solid #c4d8e7;background:#fff;border-radius:13px;color:#001d39;padding:14px;font-size:14px}.search select:focus,.search input:focus{outline:2px solid #7bbde8;outline-offset:1px}
+.search button,.btn{background:#0a4174;color:#fff;border-radius:13px}.search button:hover,.btn:hover{background:#49769f}
+.section#sale{background:#edf5fa}.section h2{color:#001d39}.section-head p{color:#49769f}
+#propertyGrid .card{background:#fff;border-color:#d4e4ef}#propertyGrid .card .price{color:#0a4174}#propertyGrid .card .tag{background:#7bbde8;color:#001d39}#propertyGrid .card .card-actions a{background:#e2eef7;color:#001d39}#propertyGrid .card .card-actions a:last-child,#propertyGrid .card .card-actions button{background:#0a4174;color:#fff}
+.feature{background:#e3eff7}.feature b{color:#0a4174}.contact{background:#001d39!important}.footer{background:#00152a!important}
+#homepageAdBanner{background:linear-gradient(135deg,#e3eff7,#bdd8e9)!important}
+@media(max-width:900px){.hero{min-height:570px}.search{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.hero{min-height:580px;padding:34px 4%}.search{margin-top:24px;padding:12px;border-radius:16px;gap:8px}.search select,.search input{padding:12px;font-size:13px}.search button{grid-column:1/-1}}
 </style>
 </head>
 <body>
