@@ -128,7 +128,7 @@ body{background:var(--bhg-paper)!important;color:var(--bhg-ink)!important;font-f
 </style>
 </head>
 <body>
-<header class="top"><a class="brand" href="#home"><img id="siteLogo" alt="شعار بدر الحياة" style="display:none;max-height:42px;max-width:90px;vertical-align:middle;object-fit:contain;margin-left:8px"><span id="brandText">BHG <span>بدر الحياة</span></span></a><div id="headerSponsorMini" aria-label="راعي الموقع"></div><nav class="nav"><a href="#home">الرئيسية</a><a href="#sale">بيع</a><a href="#sale" onclick="document.getElementById('type').value='rent';filterProperties()">إيجار</a><a href="#about">عن الشركة</a><a href="#sponsors">الرعاة</a><a href="#plans">الاشتراكات</a><a href="#account">حسابي</a><a href="#customerChat">محادثاتي</a><a href="#contact">تواصل معنا</a><a href="employee.html" class="employee-entry">دخول الموظفين</a><a href="admin.html">إدارة الموقع</a></nav></header>
+<header class="top"><a class="brand" href="#home"><img id="siteLogo" alt="شعار بدر الحياة" style="display:none;max-height:42px;max-width:90px;vertical-align:middle;object-fit:contain;margin-left:8px"><span id="brandText">BHG <span>بدر الحياة</span></span></a><div id="headerSponsorMini" aria-label="راعي الموقع"></div><nav class="nav"><a href="#home">الرئيسية</a><a href="#sale">بيع</a><a href="#sale" onclick="document.getElementById('type').value='rent';filterProperties()">إيجار</a><a href="#about">عن الشركة</a><a href="#sponsors">الرعاة</a><a href="#plans">الاشتراكات</a><a href="login.html">تسجيل الدخول</a><a href="#customerChat">محادثاتي</a><a href="#contact">تواصل معنا</a><a href="login.html#employee" class="employee-entry">دخول الموظفين</a><a href="admin.html">إدارة الموقع</a></nav></header>
 <section class="hero" id="home"><div class="hero-content"><div class="eyebrow">اختار بيتك.. وخطوتك الجاية</div><h1>عقارك المناسب<br>بقى أقرب مما تتخيل</h1><p>دور على شقة، فيلا، محل أو أرض للبيع والإيجار. بنساعدك توصل لاختيار يناسب احتياجك وميزانيتك.</p>
 <div class="search"><select id="type"><option value="all">كل العقارات</option><option value="sale">للبيع</option><option value="rent">للإيجار</option></select><select id="category"><option value="all">كل الأنواع</option><option value="شقة">شقة</option><option value="فيلا">فيلا</option><option value="محل">محل</option><option value="أرض">أرض</option><option value="إداري">إداري</option><option value="تجاري">تجاري</option></select><input id="area" placeholder="المنطقة (مثال: بدر)"><input id="budget" type="number" placeholder="أقصى سعر"><button onclick="filterProperties()">ابحث</button></div></div></section>
 <section id="homepageAdBanner" aria-label="إعلانات الرعاة" style="display:none;padding:22px 5%;background:#eef2f6"><div id="homepageAdBannerItems" style="display:grid;gap:16px;max-width:1400px;margin:auto"></div></section>
@@ -159,8 +159,22 @@ body{background:var(--bhg-paper)!important;color:var(--bhg-ink)!important;font-f
  <p class="package-footnote">الأسعار بالجنيه المصري وبسعر إطلاق خاص. الباقات تخص الظهور داخل موقع بدر الحياة فقط، ولا تشمل ميزانية إعلانات Meta أو Google. التصميمات والصور يقدّمها المعلن، ويمكن الاتفاق على خدمات إضافية بشكل منفصل.</p>
  <div id="packageRequestStatus" class="package-request-status" aria-live="polite"></div>
 </section>
-<section class="section" id="account"><div class="section-head"><div><h2>حسابك على بدر الحياة</h2><p>أنشئ حسابًا لمتابعة طلباتك والتواصل معنا</p></div></div><div class="settings-box" style="position:static;max-width:520px;margin:0 auto;box-shadow:0 8px 25px #0001"><div id="accountLoggedOut"><label>الاسم (لإنشاء حساب)</label><input id="accountName" placeholder="اسمك"><label>البريد الإلكتروني</label><input id="accountEmail" type="email" placeholder="name@example.com"><label>كلمة المرور (8 أحرف على الأقل)</label><input id="accountPassword" type="password" minlength="8"><div class="settings-actions"><button onclick="customerSignUp()">إنشاء حساب</button><button class="secondary" onclick="customerSignIn()">دخول</button></div></div><div id="accountLoggedIn" style="display:none"><p id="accountWelcome"></p><button class="secondary" onclick="customerSignOut()">تسجيل الخروج</button></div><div id="accountStatus" class="status"></div></div></section>
-<section class="section" id="customerChat" style="background:#f0f3f7"><div class="section-head"><div><h2>محادثات العملاء</h2><p>راسل فريق بدر الحياة مباشرة من الموقع</p></div></div><div class="settings-box" style="position:static;max-width:720px;margin:0 auto;box-shadow:0 8px 25px #0001"><div id="chatAuthNotice">سجّل الدخول أولاً من قسم حسابي لبدء المحادثة.</div><div id="customerChatBox" style="display:none"><div id="customerMessages" style="height:300px;overflow:auto;background:#f4f6f8;border-radius:12px;padding:10px;margin-bottom:12px"></div><textarea id="customerMessage" placeholder="اكتب رسالتك…" style="width:100%;min-height:90px;padding:12px;border:1px solid #dbe3eb;border-radius:10px;font:inherit"></textarea><div class="settings-actions"><button onclick="sendCustomerMessage()">إرسال</button><button class="secondary" onclick="refreshCustomerChat()">تحديث الرسائل</button></div></div><div id="customerChatStatus" class="status"></div></div></section>
+<section class="section" id="account">
+ <div class="section-head"><div><h2>حسابك على بدر الحياة</h2><p>تسجيل ودخول العملاء والموظفين من صفحة واحدة.</p></div></div>
+ <div style="max-width:720px;margin:0 auto;background:#fff;border:1px solid #d8e6f0;border-radius:20px;padding:28px;text-align:center;box-shadow:0 12px 30px #001d390d">
+  <h3 style="color:#001d39;margin-top:0">اختار نوع حسابك</h3>
+  <p style="color:#617b91;line-height:1.9">العميل يقدر ينشئ حساب مجاني ويتابع محادثاته، والموظف يدخل ببياناته التي توفرها له الإدارة.</p>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+   <a href="login.html" class="btn" style="display:inline-block;padding:12px 22px">دخول / تسجيل العميل</a>
+   <a href="login.html#employee" class="btn" style="display:inline-block;padding:12px 22px;background:#7bbde8;color:#001d39">دخول الموظفين</a>
+  </div>
+  <div id="legacyAccountControls" style="display:none">
+   <div id="accountLoggedOut"><label>الاسم</label><input id="accountName"><label>البريد الإلكتروني</label><input id="accountEmail"><label>كلمة المرور</label><input id="accountPassword"><div class="settings-actions"><button onclick="customerSignUp()">إنشاء حساب</button><button class="secondary" onclick="customerSignIn()">دخول</button></div></div>
+   <div id="accountLoggedIn" style="display:none"><p id="accountWelcome"></p><button class="secondary" onclick="customerSignOut()">تسجيل الخروج</button></div>
+  </div>
+  <div id="accountStatus" class="status"></div>
+ </div>
+</section>
 <section class="contact" id="contact"><h2>بتدور على عقار؟</h2><p>سيب استفسارك أو تواصل معانا مباشرة، وهنساعدك تختار.</p><a class="btn" id="wa" href="https://wa.me/201000000000" target="_blank">تواصل عبر واتساب</a><a class="btn" id="fbLink" href="#" target="_blank" style="margin-right:8px;background:#fff;color:#10243a">صفحتنا على فيسبوك</a></section>
 <footer class="footer"><span>© 2026 BHG بدر الحياة — جميع الحقوق محفوظة</span><span>بيع • إيجار • تسويق عقاري</span></footer><a class="whats" id="floatWa" href="https://wa.me/201000000000" target="_blank">واتساب</a>
 <button class="settings-btn" type="button" onclick="openSettings()">⚙️ إعدادات الموقع</button>
@@ -376,14 +390,14 @@ async function loadPublicSponsors(){
 }
 const commercialPackages={
  ad:[
-  {name:'باقة البداية',subtitle:'ابدأ الظهور أمام الباحثين عن عقار في بدر',icon:'◫',monthly:600,prices:{1:600,3:1500,6:2700,12:4800},features:['بانر إعلاني داخل الصفحة الرئيسية أسفل البحث','رابط مباشر لموقعك أو صفحة نشاطك','ظهور عادي طوال مدة الاشتراك','مناسبة للتجربة والتعريف بالنشاط']},
-  {name:'باقة الانتشار',subtitle:'ظهور أوضح وأولوية أعلى وسط الإعلانات',icon:'✦',monthly:1200,prices:{1:1200,3:3000,6:5400,12:9600},popular:true,features:['كل مميزات باقة البداية','أولوية ظهور قبل الإعلانات العادية','شارة «إعلان مميز» على البانر','مناسبة للأنشطة التي تريد ظهورًا أقوى']},
-  {name:'باقة الإعلان الرئيسي',subtitle:'أقوى مساحة إعلانية متاحة على الموقع',icon:'◆',monthly:2000,prices:{1:2000,3:5100,6:9000,12:15600},features:['كل مميزات باقة الانتشار','أولوية أولى داخل مساحة البانرات','مساحة عرض أكبر للبانر','شارة «إعلان رئيسي» لتمييز نشاطك']}
+  {name:'باقة البداية',subtitle:'ابدأ الظهور أمام الباحثين عن عقار في بدر',icon:'◫',monthly:1500,prices:{1:1500,3:4200,6:7800,12:13800},features:['بانر إعلاني داخل الصفحة الرئيسية أسفل البحث','رابط مباشر لموقعك أو صفحة نشاطك','ظهور عادي طوال مدة الاشتراك','مناسبة للتجربة والتعريف بالنشاط']},
+  {name:'باقة الانتشار',subtitle:'ظهور أوضح وأولوية أعلى وسط الإعلانات',icon:'✦',monthly:2500,prices:{1:2500,3:7200,6:13800,12:25200},popular:true,features:['كل مميزات باقة البداية','أولوية ظهور قبل الإعلانات العادية','شارة «إعلان مميز» على البانر','مناسبة للأنشطة التي تريد ظهورًا أقوى']},
+  {name:'باقة الإعلان الرئيسي',subtitle:'أقوى مساحة إعلانية متاحة على الموقع',icon:'◆',monthly:4000,prices:{1:4000,3:11700,6:22800,12:42000},features:['كل مميزات باقة الانتشار','أولوية أولى داخل مساحة البانرات','مساحة عرض أكبر للبانر','شارة «إعلان رئيسي» لتمييز نشاطك']}
  ],
  sponsor:[
-  {name:'باقة الداعم',subtitle:'خلّي اسم علامتك حاضرًا مع شركاء بدر الحياة',icon:'◎',monthly:900,prices:{1:900,3:2400,6:4200,12:7200},features:['عرض لوجو النشاط في شريط الرعاة أسفل الموقع','اسم الراعي ظاهر بجوار اللوجو','رابط مباشر إلى نشاطك أو صفحتك','مناسبة للشركات والمحلات والخدمات المحلية']},
-  {name:'باقة الشريك',subtitle:'ظهور في الشريط العلوي لزوار الموقع',icon:'✦',monthly:1800,prices:{1:1800,3:4800,6:8400,12:14400},popular:true,features:['كل مميزات باقة الداعم','عرض اللوجو في الشريط العلوي للموقع','أولوية ظهور ضمن الشركاء','رابط مباشر لنشاطك']},
-  {name:'باقة الراعي الرئيسي',subtitle:'حضور بارز في أعلى الموقع وأسفل الصفحة',icon:'◆',monthly:3500,prices:{1:3500,3:9300,6:16800,12:28800},features:['عرض اللوجو في الشريط العلوي','عرض اللوجو أيضًا في شريط الرعاة أسفل الموقع','أولوية أولى بين الرعاة','تمييز بصفتك الراعي الرئيسي']}
+  {name:'باقة الداعم',subtitle:'خلّي اسم علامتك حاضرًا مع شركاء بدر الحياة',icon:'◎',monthly:2000,prices:{1:2000,3:5700,6:10800,12:19200},features:['عرض لوجو النشاط في شريط الرعاة أسفل الموقع','اسم الراعي ظاهر بجوار اللوجو','رابط مباشر إلى نشاطك أو صفحتك','مناسبة للشركات والمحلات والخدمات المحلية']},
+  {name:'باقة الشريك',subtitle:'ظهور في الشريط العلوي لزوار الموقع',icon:'✦',monthly:3500,prices:{1:3500,3:10200,6:19800,12:37200},popular:true,features:['كل مميزات باقة الداعم','عرض اللوجو في الشريط العلوي للموقع','أولوية ظهور ضمن الشركاء','رابط مباشر لنشاطك']},
+  {name:'باقة الراعي الرئيسي',subtitle:'حضور بارز في أعلى الموقع وأسفل الصفحة',icon:'◆',monthly:6000,prices:{1:6000,3:17700,6:34800,12:67200},features:['عرض اللوجو في الشريط العلوي','عرض اللوجو أيضًا في شريط الرعاة أسفل الموقع','أولوية أولى بين الرعاة','تمييز بصفتك الراعي الرئيسي']}
  ]
 };
 let selectedPackageKind='ad',selectedPackageMonths=1;
