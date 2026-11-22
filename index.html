@@ -314,9 +314,13 @@ function openPropertyDetails(i){const p=window.bhgProperties?.[i];if(!p)return;c
 const defaultSettings={name:'BHG بدر الحياة',tagline:'اختار بيتك.. وخطوتك الجاية',whats:'',facebook:'',navy:'#001d39',gold:'#7bbde8',paper:'#edf5fa',surface:'#edf5fa',ink:'#001d39',font:'Cairo',heroAlign:'center',desktop:{hero:520,spacing:55,image:360,font:16},mobile:{hero:580,spacing:38,image:260,font:14},layoutOrder:['home','homepageAdBanner','sponsors','sale','about','plans','account','customerChat','contact'],logo:'',bg:''};
 function readSettings(){return {...defaultSettings,...(window.bhgSharedSettings||{})};}
 function applyLayoutOrder(order){
- const header=document.querySelector('.top');if(!header)return;const parent=header.parentNode;let anchor=header.nextSibling;
+ const header=document.querySelector('.top');if(!header)return;
+ const parent=header.parentNode;const anchor=header.nextSibling;
  const valid=['home','homepageAdBanner','sponsors','sale','about','plans','account','customerChat','contact'];
- (Array.isArray(order)?order:defaultSettings.layoutOrder).filter((id,i,a)=>valid.includes(id)&&a.indexOf(id)===i).concat(valid.filter(id=>!(order||[]).includes(id))).forEach(id=>{const el=document.getElementById(id);if(el)parent.insertBefore(el,anchor);});
+ const requested=Array.isArray(order)?order:defaultSettings.layoutOrder;
+ const clean=requested.filter((id,i,a)=>valid.includes(id)&&a.indexOf(id)===i);
+ const rest=clean.filter(id=>id!=='home').concat(valid.filter(id=>id!=='home'&&!clean.includes(id)));
+ ['home',...rest].forEach(id=>{const el=document.getElementById(id);if(el)parent.insertBefore(el,anchor);});
 }
 function applySettings(v){
  const name=(v.name||defaultSettings.name).trim();
