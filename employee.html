@@ -31,7 +31,7 @@ main{max-width:1180px;margin:26px auto;padding:0 16px}.panel{background:#fff;bor
 <button class="navbtn active" onclick="showTab('overview',this)">الرئيسية</button>
 <button class="navbtn" onclick="showTab('myProperties',this);loadMyProperties()">عقاراتي</button>
 <button class="navbtn" onclick="showTab('addProperty',this);resetPropertyForm()">＋ إضافة عقار</button>
-<button class="navbtn" onclick="showTab('chat',this);loadThreads()">المحادثات</button>
+<button class="navbtn" onclick="showTab('chat',this);loadThreads()"<button id="adsNav" class="navbtn hidden" onclick="showTab('myAds',this);loadMyAds()">إعلاناتي</button>>المحادثات</button>
 </nav>
 <section id="tab-overview" class="tab active">
 <div class="panel"><h2>مرحباً بك في بوابة الموظفين</h2><p class="muted">من هنا تقدر تضيف عقاراتك وتتابعها وتتواصل مع العملاء وفريق العمل من المحادثات المخصصة لك.</p><div class="actions"><button class="btn gold" onclick="showTab('addProperty',document.querySelectorAll('.navbtn')[2]);resetPropertyForm()">إضافة عقار جديد</button><button class="btn secondary" onclick="showTab('chat',document.querySelectorAll('.navbtn')[3]);loadThreads()">فتح المحادثات</button></div></div>
@@ -56,6 +56,18 @@ main{max-width:1180px;margin:26px auto;padding:0 16px}.panel{background:#fff;bor
 </div>
 <div class="actions"><button id="savePropertyBtn" class="btn gold" onclick="saveProperty()">حفظ العقار</button><button class="btn secondary" onclick="showTab('myProperties',document.querySelectorAll('.navbtn')[1]);loadMyProperties()">إلغاء</button></div><div id="propertyStatus" class="status"></div>
 </div>
+</section>
+<section id="tab-myAds" class="tab">
+<div class="panel"><div class="toolbar"><div><h2 style="margin:0">إعلاناتي</h2><p class="muted" style="margin:4px 0 0">إضافة ومتابعة إعلانات البانر الخاصة بك.</p></div><button class="btn secondary" onclick="loadMyAds()">تحديث</button></div>
+<div class="formgrid">
+<div class="field"><label>اسم الإعلان *</label><input id="adName" placeholder="اسم الإعلان أو الشركة"></div>
+<div class="field"><label>رابط الإعلان</label><input id="adUrl" type="url" placeholder="https://"></div>
+<div class="field full"><label>صورة البانر *</label><input id="adImage" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewEmployeeAd(this)"><div id="employeeAdPreview" class="muted" style="margin-top:8px">معاينة صورة الإعلان ستظهر هنا.</div></div>
+<div class="field full"><label>نص قصير على الإعلان (اختياري)</label><input id="adText" placeholder="رسالة الإعلان"></div>
+<div class="field"><label>تاريخ البداية (اختياري)</label><input id="adStart" type="datetime-local"></div>
+<div class="field"><label>تاريخ النهاية (اختياري)</label><input id="adEnd" type="datetime-local"></div>
+</div><button class="btn gold" onclick="createEmployeeAd()">نشر الإعلان</button><div id="adStatus" class="status"></div>
+</div><div class="panel"><h3>الإعلانات المسجلة</h3><div id="myAdsList"><div class="empty">جارٍ تحميل الإعلانات…</div></div></div>
 </section>
 <section id="tab-chat" class="tab">
 <div class="panel"><div class="toolbar"><div><h2 style="margin:0">المحادثات</h2><p class="muted" style="margin:4px 0 0">المحادثات التي أضافتك الإدارة إليها أو المحادثات المخصصة لك.</p></div><button class="btn secondary" onclick="loadThreads()">تحديث</button></div>
@@ -89,6 +101,7 @@ async function loadPortal(u){
  $('welcome').textContent='أهلاً '+(p.display_name||u.email);
  const labels={sales:'مبيعات',marketing:'تسويق',support:'خدمة العملاء',manager:'مدير فريق'};
  $('role').textContent='القسم: '+(labels[p.role_key]||'موظف');
+ if(['marketing','manager'].includes(p.role_key))$('adsNav').classList.remove('hidden');
  loadMyProperties();
 }
 async function signOut(){await db.auth.signOut();user=null;profile=null;threadId=null;$('portal').classList.add('hidden');$('login').classList.remove('hidden');$('loginSponsors').classList.remove('hidden');$('logoutBtn').classList.add('hidden');$('username').value='';$('password').value='';$('password').focus()}
@@ -136,6 +149,54 @@ async function loadMyProperties(){
  cachedProperties=data||[];if(!cachedProperties.length){box.innerHTML='<div class="empty">لسه مفيش عقارات مضافة بحسابك. اضغط «إضافة عقار» للبدء.</div>';return}
  const labels={available:'متاح',reserved:'محجوز',sold:'تم البيع',rented:'تم التأجير'};
  box.innerHTML=cachedProperties.map(p=>{const image=Array.isArray(p.images)&&p.images.length?p.images[0]:'';return '<article class="property">'+(image?'<img src="'+esc(image)+'" alt="'+esc(p.title)+'">':'<div class="property-empty empty">بدون صورة</div>')+'<div class="property-body"><span class="tag">'+(p.listing_type==='rent'?'للإيجار':'للبيع')+'</span> <span class="tag">'+esc(labels[p.status]||p.status||'متاح')+'</span><h3>'+esc(p.title)+'</h3><div class="muted">'+esc(p.address||'مدينة بدر')+'</div><div class="price">'+(p.price?Number(p.price).toLocaleString('en-US')+' جنيه':'السعر عند التواصل')+'</div><div class="actions"><button class="btn secondary" onclick="editMyProperty(\''+p.id+'\')">تعديل البيانات</button></div></div></article>'}).join('');
+}
+
+function previewEmployeeAd(input){
+ const box=$('employeeAdPreview'),file=input.files&&input.files[0];
+ if(!file){box.textContent='معاينة صورة الإعلان ستظهر هنا.';return}
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)){box.textContent='استخدم JPG أو PNG أو WEBP فقط.';return}
+ const url=URL.createObjectURL(file);box.innerHTML='<img src="'+url+'" alt="معاينة الإعلان" style="display:block;width:100%;max-height:230px;object-fit:cover;border-radius:12px"><small class="muted">معاينة قبل النشر</small>';
+}
+async function loadMyAds(){
+ const box=$('myAdsList');box.innerHTML='<div class="empty">جارٍ تحميل إعلاناتك…</div>';
+ const {data,error}=await db.from('sponsors').select('id,company_name,image_url,ad_text,target_url,active,starts_at,ends_at,created_at').eq('created_by',user.id).eq('placement','banner').order('created_at',{ascending:false});
+ if(error){box.innerHTML='<div class="empty">تعذر تحميل الإعلانات: '+esc(error.message)+'</div>';return}
+ if(!data?.length){box.innerHTML='<div class="empty">لا توجد إعلانات مضافة بحسابك.</div>';return}
+ box.innerHTML='<div class="cards">'+data.map(a=>'<article class="property">'+(a.image_url?'<img src="'+esc(a.image_url)+'" alt="'+esc(a.company_name)+'">':'')+'<div class="property-body"><h3>'+esc(a.company_name)+'</h3><p class="muted">'+esc(a.ad_text||'إعلان بانر')+'</p><span class="tag">'+(a.active?'مفعّل':'متوقف')+'</span><div class="actions"><button class="btn secondary" data-ad-action="toggle" data-ad-id="'+esc(a.id)+'" data-active="'+String(!!a.active)+'">'+(a.active?'إيقاف':'تفعيل')+'</button><button class="btn danger" data-ad-action="delete" data-ad-id="'+esc(a.id)+'">حذف</button></div></div></article>').join('')+'</div>';
+ box.querySelectorAll('[data-ad-action="toggle"]').forEach(btn=>btn.addEventListener('click',()=>toggleMyAd(btn.dataset.adId,btn.dataset.active==='true')));
+ box.querySelectorAll('[data-ad-action="delete"]').forEach(btn=>btn.addEventListener('click',()=>deleteMyAd(btn.dataset.adId)));
+}
+async function createEmployeeAd(){
+ const name=$('adName').value.trim(),file=$('adImage').files&&$('adImage').files[0];
+ if(!name||!file){status('adStatus','اكتب اسم الإعلان واختر صورة البانر.',true);return}
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)){status('adStatus','استخدم صورة JPG أو PNG أو WEBP فقط.',true);return}
+ if(file.size>5*1024*1024){status('adStatus','حجم الصورة يجب ألا يتجاوز 5MB.',true);return}
+ status('adStatus','جارٍ رفع الإعلان…');let uploadedPath=null;
+ try{
+  const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-zA-Z0-9]/g,'').toLowerCase();
+  uploadedPath='sponsors/'+user.id+'/employee-ad-'+Date.now()+'.'+ext;
+  const {error:uploadError}=await db.storage.from('property-images').upload(uploadedPath,file,{upsert:false,contentType:file.type});
+  if(uploadError)throw uploadError;
+  const imageUrl=db.storage.from('property-images').getPublicUrl(uploadedPath).data.publicUrl;
+  const payload={company_name:name,target_url:$('adUrl').value.trim()||null,logo_url:null,image_url:imageUrl,ad_text:$('adText').value.trim()||null,placement:'banner',tier:'standard',starts_at:$('adStart').value?new Date($('adStart').value).toISOString():null,ends_at:$('adEnd').value?new Date($('adEnd').value).toISOString():null,active:true,created_by:user.id};
+  const {error}=await db.from('sponsors').insert(payload);if(error)throw error;
+  ['adName','adUrl','adText','adStart','adEnd'].forEach(id=>$(id).value='');$('adImage').value='';$('employeeAdPreview').textContent='تم نشر الإعلان بنجاح.';
+  status('adStatus','تم نشر الإعلان.');await loadMyAds();
+ }catch(e){
+  if(uploadedPath)await db.storage.from('property-images').remove([uploadedPath]);
+  status('adStatus','تعذر نشر الإعلان: '+(e.message||e),true);
+ }
+}
+async function toggleMyAd(id,active){
+ const {error}=await db.from('sponsors').update({active:!active,updated_at:new Date().toISOString()}).eq('id',id).eq('created_by',user.id);
+ if(error){status('adStatus','تعذر تغيير حالة الإعلان: '+error.message,true);return}
+ await loadMyAds();
+}
+async function deleteMyAd(id){
+ if(!confirm('هل تريد حذف هذا الإعلان؟'))return;
+ const {error}=await db.from('sponsors').delete().eq('id',id).eq('created_by',user.id);
+ if(error){status('adStatus','تعذر حذف الإعلان: '+error.message,true);return}
+ status('adStatus','تم حذف الإعلان.');await loadMyAds();
 }
 async function loadThreads(){
  const box=$('threadList');box.innerHTML='<div class="empty">جارٍ تحميل المحادثات…</div>';threadId=null;$('threadTitle').textContent='اختر محادثة من القائمة';$('messages').innerHTML='<div class="empty">ستظهر الرسائل هنا.</div>';$('message').disabled=true;$('sendBtn').disabled=true;
