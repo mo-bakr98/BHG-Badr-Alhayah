@@ -175,6 +175,18 @@ body{background:var(--bhg-paper)!important;color:var(--bhg-ink)!important;font-f
   <div id="accountStatus" class="status"></div>
  </div>
 </section>
+<section class="section" id="customerChat" style="background:#f0f3f7">
+ <div class="section-head"><div><h2>محادثات العملاء</h2><p>راسل فريق بدر الحياة مباشرة من الموقع</p></div></div>
+ <div class="settings-box" style="position:static;max-width:720px;margin:0 auto;box-shadow:0 8px 25px #0001">
+  <div id="chatAuthNotice">سجّل الدخول من صفحة تسجيل الدخول لبدء المحادثة.</div>
+  <div id="customerChatBox" style="display:none">
+   <div id="customerMessages" style="height:300px;overflow:auto;background:#f4f6f8;border-radius:12px;padding:10px;margin-bottom:12px"></div>
+   <textarea id="customerMessage" placeholder="اكتب رسالتك…" style="width:100%;min-height:90px;padding:12px;border:1px solid #dbe3eb;border-radius:10px;font:inherit"></textarea>
+   <div class="settings-actions"><button onclick="sendCustomerMessage()">إرسال</button><button class="secondary" onclick="refreshCustomerChat()">تحديث الرسائل</button></div>
+  </div>
+  <div id="customerChatStatus" class="status"></div>
+ </div>
+</section>
 <section class="contact" id="contact"><h2>بتدور على عقار؟</h2><p>سيب استفسارك أو تواصل معانا مباشرة، وهنساعدك تختار.</p><a class="btn" id="wa" href="https://wa.me/201000000000" target="_blank">تواصل عبر واتساب</a><a class="btn" id="fbLink" href="#" target="_blank" style="margin-right:8px;background:#fff;color:#10243a">صفحتنا على فيسبوك</a></section>
 <footer class="footer"><span>© 2026 BHG بدر الحياة — جميع الحقوق محفوظة</span><span>بيع • إيجار • تسويق عقاري</span></footer><a class="whats" id="floatWa" href="https://wa.me/201000000000" target="_blank">واتساب</a>
 <button class="settings-btn" type="button" onclick="openSettings()">⚙️ إعدادات الموقع</button>
