@@ -135,6 +135,59 @@ body{background:var(--bhg-paper)!important;color:var(--bhg-ink)!important;font-f
 
 /* إيقاف كل مساحات إعلانات البانر والراعي المصغر أعلى الموقع */
 #homepageAdBanner,#headerSponsorMini{display:none!important}
+
+/* BHG social-network inspired homepage refresh */
+:root{--social-blue:#1877f2;--social-bg:#f0f2f5;--social-card:#fff}
+body{background:var(--social-bg)!important}
+.top{position:sticky;top:0;z-index:80;background:#fff!important;color:#1c1e21!important;padding:9px max(3%,calc((100% - 1440px)/2));box-shadow:0 1px 4px #00000018;min-height:62px}
+.brand{color:#1877f2!important;font-size:24px}.brand span{color:#1c1e21!important}
+.nav{gap:6px;align-items:center;flex-wrap:wrap}.nav a{padding:8px 10px;border-radius:9px;color:#344054;font-weight:700}.nav a:hover{background:#e7f3ff;color:#1877f2!important}
+.nav a.employee-entry{background:#e7f3ff!important;color:#1877f2!important}
+.hero{min-height:300px!important;padding:34px 5%!important;background:linear-gradient(120deg,rgba(0,29,57,.88),rgba(10,65,116,.64)),url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1800&q=85') center 42%/cover!important;text-align:right!important;justify-content:flex-start!important}
+.hero-content{max-width:1180px!important;margin:0 auto!important;text-align:right!important}
+.hero h1{font-size:clamp(27px,3.5vw,42px)!important;margin:8px 0!important}
+.hero p{margin:8px 0!important;font-size:15px!important}
+.hero .search{margin:18px 0 0!important;max-width:1000px!important;grid-template-columns:repeat(4,minmax(0,1fr)) auto!important;border-radius:14px!important;box-shadow:0 5px 20px #00152a30!important}
+.social-feed{padding:24px max(3%,calc((100% - 1440px)/2)) 55px!important;background:var(--social-bg)!important}
+.social-feed .section-head{max-width:1440px;margin:0 auto 18px!important;align-items:center}
+.social-feed .section-head h2{font-size:23px!important}.feed-refresh{background:#e7f3ff;color:#1877f2;padding:8px 13px;border-radius:9px;font-weight:800;font-size:13px}
+.feed-layout{display:grid;grid-template-columns:220px minmax(0,760px) 220px;gap:18px;justify-content:center;align-items:start;max-width:1440px;margin:auto}
+.feed-sidebar{display:grid;gap:14px;position:sticky;top:78px}
+.feed-side-card,.feed-composer,.feed-filter{background:#fff;border:1px solid #e4e6eb;border-radius:12px;padding:16px;box-shadow:0 1px 2px #00000008}
+.feed-profile{text-align:center;display:grid;justify-items:center;gap:6px;padding:20px 12px}
+.feed-avatar{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:#1877f2;color:#fff;font-size:15px;font-weight:900;box-shadow:0 0 0 4px #e7f3ff}
+.feed-avatar.small{width:42px;height:42px;font-size:12px;flex:0 0 42px}
+.feed-profile span{font-size:12px;color:#65676b}
+.feed-links{display:grid;gap:5px;padding:10px}
+.feed-links a,.feed-side-card>a{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;color:#344054;font-weight:700;font-size:13px}
+.feed-links a:hover,.feed-side-card>a:hover{background:#f0f2f5;color:#1877f2}
+.feed-side-card p,.feed-side-note{font-size:13px;line-height:1.8;color:#65676b;margin:8px 0}
+.feed-side-card strong{font-size:15px}
+.feed-side-note{padding:10px;color:#7b8794}
+.feed-main{min-width:0}
+.feed-composer{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.feed-composer button{border:0;background:#f0f2f5;color:#65676b;border-radius:30px;padding:12px 18px;text-align:right;flex:1;font:inherit;cursor:pointer}
+.feed-composer button:hover{background:#e4e6eb}
+.feed-composer>span{color:#1877f2;font-size:24px}
+.feed-filter{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:12px;color:#65676b}
+.feed-filter span:first-child{font-weight:800;color:#1877f2}
+#propertyGrid{display:grid!important;grid-template-columns:1fr!important;gap:14px!important;max-width:none!important;margin:0!important}
+#propertyGrid .card{display:flex!important;flex-direction:column!important;min-height:0!important;border:1px solid #e4e6eb!important;border-radius:12px!important;box-shadow:0 1px 2px #00000010!important;background:#fff!important}
+#propertyGrid .card:hover{transform:none!important;box-shadow:0 3px 12px #00000012!important}
+#propertyGrid .card .photo{width:100%!important;flex:0 0 auto!important;height:350px!important;min-height:0!important}
+#propertyGrid .card .photo img{width:100%;height:100%!important;min-height:0!important;object-fit:cover}
+#propertyGrid .card .body{padding:16px 18px!important;gap:7px}
+#propertyGrid .card .body h3{font-size:20px!important}
+#propertyGrid .card .location{font-size:13px}
+#propertyGrid .card .price{font-size:23px!important;margin:6px 0!important}
+#propertyGrid .card .specs{border-top:1px solid #e4e6eb;flex-wrap:wrap}
+#propertyGrid .card .card-actions{border-top:1px solid #e4e6eb;padding-top:12px}
+#propertyGrid .card .card-actions a,#propertyGrid .card .card-actions button{border-radius:8px!important}
+#about,#plans,#account,#customerChat{background:#fff!important}
+.section{scroll-margin-top:75px}
+@media(max-width:1100px){.feed-layout{grid-template-columns:190px minmax(0,1fr)}.feed-sidebar-right{display:none}}
+@media(max-width:760px){.top{position:sticky;padding:8px 12px}.brand{font-size:20px}.nav{gap:3px;justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;width:100%;padding-bottom:2px}.nav a{white-space:nowrap;font-size:11px;padding:7px 8px}.hero{min-height:0!important;padding:28px 16px!important}.hero-content{width:100%}.hero h1{font-size:29px!important}.hero p{font-size:13px!important}.hero .search{grid-template-columns:1fr 1fr!important;padding:10px!important;gap:7px}.hero .search button{grid-column:1/-1}.social-feed{padding:20px 12px 38px!important}.feed-layout{display:block}.feed-sidebar-left{display:none}.feed-composer{padding:12px}.feed-filter{padding:12px}.feed-filter span:last-child{display:none}#propertyGrid .card .photo{height:245px!important}#propertyGrid .card .body{padding:14px!important}}
+
 </style>
 </head>
 <body>
@@ -145,7 +198,32 @@ body{background:var(--bhg-paper)!important;color:var(--bhg-ink)!important;font-f
 </div></section>
 <section id="homepageAdBanner" aria-label="إعلانات الرعاة" style="display:none;padding:22px 5%;background:#eef2f6"><div id="homepageAdBannerItems" style="display:grid;gap:16px;max-width:1400px;margin:auto"></div></section>
 <div id="propertyDetailsModal" aria-hidden="true" onclick="if(event.target===this)closePropertyDetails()" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(5,15,25,.72);align-items:center;justify-content:center;padding:16px"><div style="background:#fff;border-radius:18px;width:min(760px,100%);max-height:90vh;overflow:auto;padding:18px"><button onclick="closePropertyDetails()" style="float:left;border:0;border-radius:10px;padding:8px 14px;cursor:pointer;background:#eef2f6">✕</button><div id="propertyDetailsContent"></div></div></div>
-<section class="section" id="sale"><div class="section-head"><div><h2>عقارات مميزة</h2><p>اختيارات مميزة للبيع والإيجار</p></div></div><div class="grid" id="propertyGrid"></div><div class="empty" id="empty">مفيش عقارات مطابقة للبحث. جرّب تغيير الفلاتر.</div></section>
+<section class="section social-feed" id="sale">
+ <div class="section-head"><div><h2>آخر العقارات والمنشورات</h2><p>كل جديد في سوق العقارات بمدينة بدر</p></div><a href="#home" class="feed-refresh">استكشف العقارات</a></div>
+ <div class="feed-layout">
+  <aside class="feed-sidebar feed-sidebar-left">
+   <div class="feed-side-card feed-profile"><div class="feed-avatar">BHG</div><strong>بدر الحياة</strong><span>مجتمعك العقاري في مدينة بدر</span></div>
+   <div class="feed-side-card feed-links">
+    <a href="#home">⌂ <span>الرئيسية والبحث</span></a>
+    <a href="#sale">▦ <span>العقارات المعروضة</span></a>
+    <a href="#plans">☆ <span>الإعلانات والرعاية</span></a>
+    <a href="#sponsors">♧ <span>شركاء بدر الحياة</span></a>
+    <a href="#customerChat">✉ <span>محادثاتي</span></a>
+    <a href="login.html">◉ <span>تسجيل الدخول</span></a>
+   </div>
+  </aside>
+  <main class="feed-main">
+   <div class="feed-composer"><div class="feed-avatar small">BHG</div><button type="button" onclick="document.getElementById('home').scrollIntoView({behavior:'smooth'});document.getElementById('type').focus()">بتدور على عقار مناسب؟ ابدأ البحث من هنا...</button><span>⌕</span></div>
+   <div class="feed-filter"><span>● أحدث العقارات</span><span>بيع وإيجار في مدينة بدر</span></div>
+   <div class="grid" id="propertyGrid"></div><div class="empty" id="empty">مفيش عقارات مطابقة للبحث. جرّب تغيير الفلاتر.</div>
+  </main>
+  <aside class="feed-sidebar feed-sidebar-right">
+   <div class="feed-side-card"><strong>دور بسهولة</strong><p>اختار نوع العقار والمنطقة والميزانية من البحث أعلى الصفحة.</p><a href="#home">افتح البحث ←</a></div>
+   <div class="feed-side-card"><strong>أقسام الموقع</strong><a href="#about">عن بدر الحياة</a><a href="#plans">اعلن عن نشاطك</a><a href="#contact">تواصل معانا</a></div>
+   <div class="feed-side-note">بدر الحياة — كل ما يخص عقارك في مكان واحد.</div>
+  </aside>
+ </div>
+</section>
 <section class="section about" id="about"><div><div class="eyebrow">خبرة.. ثقة.. اختيار مناسب</div><h2>مش مجرد عقار،<br>دي بداية لحياة جديدة</h2><p>هدفنا نسهل عليك رحلة البحث عن العقار المناسب، من أول تحديد احتياجاتك لحد ما توصل لاختيارك بثقة ووضوح. تواصل معانا وهنساعدك تدور على أفضل الخيارات المتاحة.</p><div class="features"><div class="feature"><b>اختيارات متنوعة</b>بيع وإيجار</div><div class="feature"><b>تواصل مباشر</b>استفسار سريع</div><div class="feature"><b>دعم مستمر</b>معاك خطوة بخطوة</div></div></div><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80" alt="واجهة منزل حديث"></section>
 <section class="section" id="sponsors" aria-label="شركاء بدر الحياة"><div id="sponsorGrid"><div class="empty" style="display:block">جارٍ تحميل الرعاة…</div></div></section>
 <section class="section" id="plans">
