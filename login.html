@@ -43,6 +43,30 @@ h2.form-title{font-size:17px;color:#183b57;margin:0 0 14px}
 .sponsors{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px;padding-top:13px;border-top:1px solid #edf1f4}
 .sponsors small{width:100%;text-align:center;font-size:10px;color:#91a0ad}
 .sponsors img{max-width:75px;max-height:28px;object-fit:contain}.sponsor-name{font-size:10px;color:#71869a}
+.logo-box{width:76px;height:76px;margin:0 auto 9px;border:1px solid #d7e5ee;border-radius:18px;background:#f4f8fb;display:grid;place-items:center;overflow:hidden}
+.logo-box span{font-size:22px;font-weight:900;letter-spacing:1px;color:#0a4174}
+.logo-box img{display:none;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;padding:7px}
+.branding{margin-bottom:18px}.branding h1{font-size:20px}.branding p{margin-top:3px}
+.login-media{width:min(900px,100%);margin:18px auto 0;display:grid;gap:14px}
+.media-section{background:#fff;border:1px solid #dce6ed;border-radius:14px;padding:14px;box-shadow:0 5px 18px #001d3908}
+.media-heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px}
+.media-heading h2{font-size:15px;color:#001d39;margin:0}
+.media-heading span{font-size:10px;color:#8a9aa7}
+.login-ads{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.login-ad{display:block;position:relative;overflow:hidden;border-radius:10px;background:#eaf1f6;min-height:115px;color:#fff}
+.login-ad img{display:block;width:100%;height:155px;object-fit:cover}
+.login-ad:after{content:"";position:absolute;inset:30% 0 0;background:linear-gradient(transparent,#001d39bb);pointer-events:none}
+.login-ad .ad-info{position:absolute;z-index:1;bottom:9px;right:12px;left:12px;color:#fff}
+.login-ad .ad-info b{display:block;font-size:13px}.login-ad .ad-info span{font-size:11px;opacity:.9}
+.login-ad .ad-tag{position:absolute;z-index:2;top:8px;right:9px;background:#001d39d9;color:#fff;padding:4px 8px;border-radius:20px;font-size:10px}
+.ad-placeholder{min-height:92px;border:1px dashed #bed2e0;border-radius:10px;background:linear-gradient(110deg,#f3f8fb,#e8f2f8);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3px;color:#476b85}
+.ad-placeholder b{font-size:13px}.ad-placeholder span{font-size:10px}
+.sponsors{display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap;margin:0;padding:4px 0}
+.sponsors img{max-width:105px;max-height:43px;object-fit:contain}
+.sponsors .sponsor-item{text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:75px}
+.sponsor-name{font-size:10px;color:#71869a;font-weight:700}
+.sponsor-placeholder{width:100%;min-height:54px;display:grid;place-items:center;border:1px dashed #d2e0e9;border-radius:9px;color:#879aa8;font-size:11px;background:#fbfdff}
+@media(max-width:600px){.login-media{margin-top:13px}.login-ads{grid-template-columns:1fr}.login-ad img{height:145px}.media-section{padding:11px}.sponsors{gap:12px}.sponsors img{max-width:82px;max-height:36px}}
 footer{text-align:center;padding:12px;color:#8797a5;font-size:10px}
 @media(max-width:480px){header{height:56px;padding:0 4%}.brand{font-size:17px}.card{padding:22px 18px}main{padding:18px 12px}.branding h1{font-size:20px}}
 </style>
@@ -51,7 +75,7 @@ footer{text-align:center;padding:12px;color:#8797a5;font-size:10px}
 <header><a class="brand" href="index.html">BHG <span>بدر الحياة</span></a><a class="back" href="index.html">رجوع للموقع</a></header>
 <main>
 <section class="card">
- <div class="branding"><img id="loginLogo" alt="شعار بدر الحياة"><h1 id="brandName">بدر الحياة</h1><p>تسجيل الدخول</p></div>
+ <div class="branding"><div class="logo-box" id="loginLogoBox"><span id="loginLogoPlaceholder">BHG</span><img id="loginLogo" alt="شعار بدر الحياة"></div><h1 id="brandName">بدر الحياة</h1><p>تسجيل الدخول</p></div>
  <div class="role-switch">
   <button class="role-btn active" id="customerRoleBtn" onclick="setRole('customer')">عميل</button>
   <button class="role-btn" id="employeeRoleBtn" onclick="setRole('employee')">موظف</button>
@@ -75,7 +99,16 @@ footer{text-align:center;padding:12px;color:#8797a5;font-size:10px}
   <button id="employeeSubmit" class="primary-btn" onclick="signInEmployee()">دخول</button>
   <div id="employeeStatus" class="status" aria-live="polite"></div>
  </div>
- <div id="loginSponsors" class="sponsors"><small>الرعاة</small></div>
+ <div class="login-media">
+ <section id="loginAdsSection" class="media-section">
+  <div class="media-heading"><h2>الإعلانات</h2><span>إعلانات شركائنا</span></div>
+  <div id="loginAds" class="login-ads"><div class="ad-placeholder"><b>مساحة إعلانية</b><span>تظهر هنا البانرات المضافة من إدارة الموقع</span></div></div>
+ </section>
+ <section id="loginSponsorsSection" class="media-section sponsors-section">
+  <div class="media-heading"><h2>الرعاة</h2><span>شركاء بدر الحياة</span></div>
+  <div id="loginSponsors" class="sponsors"><div class="sponsor-placeholder">مساحة مخصصة لشعارات الرعاة</div></div>
+ </section>
+</div>
 </section>
 </main>
 <footer>© 2026 بدر الحياة</footer>
@@ -158,16 +191,35 @@ async function signInEmployee(){
 async function signOut(){await db.auth.signOut();location.reload()}
 async function loadBranding(){
  try{
-  const {data}=await db.from('site_settings').select('settings').eq('setting_key','main').maybeSingle();
+  const {data,error}=await db.from('site_settings').select('settings').eq('setting_key','main').maybeSingle();
+  if(error)throw error;
   const v=data?.settings||{};
   if(v.name)$('brandName').textContent=v.name;
-  if(v.logo){$('loginLogo').src=v.logo;$('loginLogo').style.display='block'}
+  if(v.logo){$('loginLogo').src=v.logo;$('loginLogo').style.display='block';$('loginLogoPlaceholder').style.display='none';}
  }catch(e){console.warn('Branding unavailable',e)}
  try{
-  const {data}=await db.from('sponsors').select('company_name,logo_url,image_url,placement').eq('active',true).in('placement',['footer_logo','header_logo']).order('tier');
-  const logos=(data||[]).filter(x=>x.logo_url||x.image_url);
-  $('loginSponsors').innerHTML='<small>شركاء بدر الحياة</small>'+(logos.length?logos.map(x=>'<div><img src="'+String(x.logo_url||x.image_url).replace(/"/g,'&quot;')+'" alt=""><div class="sponsor-name">'+String(x.company_name||'').replace(/[&<>]/g,'')+'</div></div>').join(''):'<span class="sponsor-name">شركاؤنا قريبًا</span>');
- }catch(e){console.warn('Sponsors unavailable',e)}
+  const {data,error}=await db.from('sponsors').select('id,company_name,image_url,logo_url,ad_text,target_url,tier,active,placement,starts_at,ends_at').eq('active',true).eq('placement','banner').order('created_at',{ascending:false});
+  if(error)throw error;
+  const now=Date.now(),rank={main:0,featured:1,standard:2};
+  const ads=(data||[]).filter(x=>(!x.starts_at||new Date(x.starts_at).getTime()<=now)&&(!x.ends_at||new Date(x.ends_at).getTime()>=now)&&(x.image_url||x.logo_url)).sort((a,b)=>(rank[a.tier]??3)-(rank[b.tier]??3));
+  $('loginAds').innerHTML=ads.length?ads.map(x=>{
+   const image=x.image_url||x.logo_url,tag=x.tier==='main'?'إعلان رئيسي':x.tier==='featured'?'إعلان مميز':'إعلان';
+   const content='<img src="'+String(image).replace(/"/g,'&quot;')+'" alt="'+String(x.company_name||'إعلان').replace(/[&<>"]/g,'')+'"><span class="ad-tag">'+tag+'</span><span class="ad-info"><b>'+String(x.company_name||'').replace(/[&<>]/g,'')+'</b>'+(x.ad_text?'<span>'+String(x.ad_text).replace(/[&<>]/g,'')+'</span>':'')+'</span>';
+   const target=(()=>{try{const u=new URL(x.target_url||'',location.href);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return ''}})();
+   return target?'<a class="login-ad" href="'+target.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener noreferrer">'+content+'</a>':'<div class="login-ad">'+content+'</div>';
+  }).join(''):'<div class="ad-placeholder"><b>مساحة إعلانية متاحة</b><span>تظهر هنا البانرات التي تضيفها الإدارة</span></div>';
+ }catch(e){console.warn('Login ads unavailable',e);$('loginAds').innerHTML='<div class="ad-placeholder"><b>الإعلانات</b><span>تعذر تحميل الإعلانات حاليًا</span></div>'}
+ try{
+  const {data,error}=await db.from('sponsors').select('id,company_name,logo_url,image_url,target_url,tier,placement,active,starts_at,ends_at').eq('active',true).in('placement',['footer_logo','header_logo']).order('tier');
+  if(error)throw error;
+  const now=Date.now(),rank={main:0,featured:1,standard:2};
+  const logos=(data||[]).filter(x=>(!x.starts_at||new Date(x.starts_at).getTime()<=now)&&(!x.ends_at||new Date(x.ends_at).getTime()>=now)&&(x.logo_url||x.image_url)).sort((a,b)=>(rank[a.tier]??3)-(rank[b.tier]??3));
+  $('loginSponsors').innerHTML=logos.length?logos.map(x=>{
+   const href=(()=>{try{const u=new URL(x.target_url||'',location.href);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return ''}})();
+   const item='<span class="sponsor-item"><img src="'+String(x.logo_url||x.image_url).replace(/"/g,'&quot;')+'" alt="'+String(x.company_name||'راعي').replace(/[&<>"]/g,'')+'"><span class="sponsor-name">'+String(x.company_name||'').replace(/[&<>]/g,'')+'</span></span>';
+   return href?'<a href="'+href.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener noreferrer">'+item+'</a>':item;
+  }).join(''):'<div class="sponsor-placeholder">مساحة مخصصة لشعارات الرعاة</div>';
+ }catch(e){console.warn('Login sponsors unavailable',e);$('loginSponsors').innerHTML='<div class="sponsor-placeholder">الرعاة</div>'}
 }
 document.addEventListener('DOMContentLoaded',async()=>{
  setRole(location.hash==='#employee'?'employee':'customer');
