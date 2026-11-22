@@ -3,81 +3,82 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>تسجيل الدخول | بدر الحياة</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--navy:#001d39;--blue:#0a4174;--sky:#7bbde8;--pale:#edf5fa;--ink:#102b43;--muted:#617b91;--line:#d7e6f0}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#e5f1f8,#f7fbfe 55%,#e1edf6);font-family:Cairo,Arial,sans-serif;color:var(--ink)}button,input{font:inherit}a{text-decoration:none;color:inherit}
-.top{height:72px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;box-shadow:0 6px 24px #001d3922}.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:21px}.brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(145deg,#9bd4f8,#4f91c0);display:grid;place-items:center;color:#001d39;font-size:17px;font-weight:900}.brand span:last-child{color:#9bd4f8}.back{padding:9px 14px;border-radius:10px;background:#ffffff17;color:#e7f4fc;font-weight:700;font-size:13px}
-main{max-width:1120px;margin:44px auto;padding:0 18px}.auth-layout{display:grid;grid-template-columns:1.02fr .98fr;gap:22px;align-items:stretch}
-.visual{position:relative;overflow:hidden;min-height:610px;border-radius:26px;padding:42px;background:linear-gradient(145deg,#001d39,#0a4174 62%,#276e9a);color:#fff;box-shadow:0 25px 60px #001d3928;display:flex;flex-direction:column;justify-content:space-between}
-.visual:before,.visual:after{content:"";position:absolute;border-radius:50%;pointer-events:none}.visual:before{width:430px;height:430px;border:1px solid #b9e4ff35;left:-150px;top:-145px;box-shadow:0 0 0 34px #b9e4ff0c,0 0 0 70px #b9e4ff08}.visual:after{width:260px;height:260px;background:radial-gradient(circle,#7bbde855,transparent 68%);right:-80px;bottom:-70px}
-.visual-content,.visual-bottom{position:relative;z-index:1}.visual-kicker{display:inline-block;padding:7px 13px;border:1px solid #c9eaff55;border-radius:50px;color:#bfe4fc;font-size:11px;letter-spacing:1.4px;font-weight:800}.visual h1{font-size:clamp(31px,4vw,48px);line-height:1.45;margin:20px 0 12px}.visual p{color:#d1e4f2;line-height:2;max-width:430px;font-size:15px}
-.visual-points{display:grid;gap:12px;margin-top:28px}.point{display:flex;align-items:center;gap:12px;color:#e6f3fb;font-size:14px}.point-icon{width:34px;height:34px;flex:0 0 34px;border-radius:11px;background:#ffffff18;display:grid;place-items:center;color:#a9dcfb;font-size:16px}.visual-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#b9d5e7;font-size:12px}.visual-orbit{position:absolute;left:7%;bottom:23%;width:170px;height:170px;border:1px solid #bce7ff35;border-radius:50%;box-shadow:0 0 0 20px #bce7ff08,0 0 0 42px #bce7ff07}
-.auth-card{background:#fff;border:1px solid #dbe8f1;border-radius:26px;padding:30px;box-shadow:0 25px 60px #001d3912;display:flex;flex-direction:column;justify-content:center}
-.auth-brand{text-align:center;margin-bottom:18px}.auth-brand img{max-width:170px;max-height:70px;object-fit:contain;display:none;margin:0 auto 9px}.auth-brand h2{font-size:25px;color:var(--navy);margin:0}.auth-brand p{color:var(--muted);font-size:13px;margin:5px 0 0}
-.role-switch{display:grid;grid-template-columns:1fr 1fr;gap:7px;background:#eef5fa;padding:6px;border-radius:14px;margin:10px 0 18px}
-.role-btn{border:0;border-radius:10px;padding:11px 8px;background:transparent;color:#57748c;font-weight:800;cursor:pointer;transition:.2s}.role-btn.active{background:var(--navy);color:#fff;box-shadow:0 5px 15px #001d3928}
-.customer-mode{display:flex;gap:14px;justify-content:center;margin:-2px 0 17px}.mode-link{border:0;background:none;padding:0;color:#628098;font-size:13px;font-weight:800;cursor:pointer}.mode-link.active{color:#0a679e;text-decoration:underline;text-underline-offset:5px}
-.form-title{margin:0 0 13px;font-size:19px;color:var(--navy)}.field{margin:11px 0}.field label{display:block;font-size:13px;font-weight:800;margin-bottom:6px;color:#294a63}.field input{width:100%;height:47px;border:1px solid #cbdde9;border-radius:11px;padding:0 13px;outline:none;background:#fbfdff;color:var(--ink)}.field input:focus{border-color:#5a9ecb;box-shadow:0 0 0 3px #7bbde822}.primary-btn{width:100%;border:0;border-radius:12px;padding:13px 16px;margin-top:10px;background:linear-gradient(100deg,#0a4174,#126c9c);color:#fff;font-weight:900;cursor:pointer;box-shadow:0 8px 18px #0a41742b}.primary-btn:disabled{opacity:.6;cursor:wait}.status{min-height:25px;margin-top:10px;line-height:1.7;font-size:12px;text-align:center;color:#287448}.status.error{color:#b42318}.helper{font-size:11px;color:#728a9c;text-align:center;line-height:1.8;margin:12px 0 0}
-.employee-note{background:#eff7fc;border:1px solid #d8eaf5;border-radius:12px;padding:12px;font-size:12px;line-height:1.8;color:#57748c;margin:0 0 10px}
-.logged-in{display:none;text-align:center;padding:20px 0}.logged-in h3{color:var(--navy)}.logged-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.logged-actions a,.logged-actions button{padding:10px 15px;border-radius:10px;border:0;font:inherit;font-weight:800;cursor:pointer}.go-home{background:var(--navy);color:#fff}.signout{background:#eaf2f7;color:#244963}
-.sponsors{display:flex;justify-content:center;align-items:center;gap:17px;flex-wrap:wrap;margin-top:24px;padding-top:16px;border-top:1px solid #e9f0f5}.sponsors small{width:100%;text-align:center;color:#91a5b4;font-size:10px}.sponsors img{max-width:90px;max-height:32px;object-fit:contain}.sponsor-name{font-size:11px;color:#6d8799;font-weight:700}
-.footer{text-align:center;color:#7891a3;font-size:11px;padding:10px 15px 28px}
-@media(max-width:850px){main{margin:24px auto}.auth-layout{grid-template-columns:1fr}.visual{min-height:260px;padding:27px}.visual h1{font-size:29px;margin:12px 0}.visual p{font-size:13px;margin:5px 0}.visual-points{grid-template-columns:repeat(3,1fr);gap:7px;margin-top:15px}.point{font-size:11px;align-items:flex-start}.point-icon{width:28px;height:28px;flex-basis:28px}.visual-bottom{margin-top:18px}.visual-orbit{width:110px;height:110px;bottom:5%;left:10%}.auth-card{padding:24px;max-width:620px;width:100%;margin:0 auto}}
-@media(max-width:500px){.top{height:62px;padding:0 4%}.brand{font-size:17px}.brand-mark{width:32px;height:32px}.back{font-size:11px;padding:8px 10px}main{padding:0 12px}.visual{border-radius:19px;min-height:245px;padding:22px}.visual h1{font-size:25px}.visual-points{grid-template-columns:1fr 1fr}.visual-bottom{font-size:10px}.auth-card{border-radius:19px;padding:19px}.auth-brand h2{font-size:22px}}
+*{box-sizing:border-box}
+body{margin:0;background:#f2f6f9;color:#183149;font-family:Cairo,Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+a{text-decoration:none;color:inherit}button,input{font:inherit}
+header{height:62px;background:#001d39;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 5%}
+.brand{font-weight:800;font-size:19px}.brand span{color:#7bbde8}
+.back{font-size:13px;color:#d8eaf6}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:30px 16px}
+.card{width:min(440px,100%);background:#fff;border:1px solid #dce6ed;border-radius:16px;padding:28px;box-shadow:0 8px 28px #001d3910}
+.branding{text-align:center;margin-bottom:22px}
+.branding img{display:none;max-width:125px;max-height:65px;object-fit:contain;margin:0 auto 8px}
+.branding h1{font-size:22px;margin:0;color:#001d39}
+.branding p{font-size:12px;color:#71869a;margin:4px 0 0}
+.role-switch{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:#eef3f7;border-radius:10px;margin-bottom:20px}
+.role-btn{border:0;border-radius:8px;padding:10px 6px;background:transparent;color:#60778a;font-weight:800;font-size:13px;cursor:pointer}
+.role-btn.active{background:#001d39;color:#fff}
+.customer-mode{display:flex;gap:18px;margin:0 0 16px;justify-content:center}
+.mode-link{border:0;background:transparent;color:#688096;font-size:13px;font-weight:700;padding:3px;cursor:pointer}
+.mode-link.active{color:#0a5e90;border-bottom:2px solid #0a5e90}
+h2.form-title{font-size:17px;color:#183b57;margin:0 0 14px}
+.field{margin:12px 0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
+.field input{width:100%;height:44px;border:1px solid #d4e0e8;border-radius:9px;padding:0 12px;background:#fff;outline:none}
+.field input:focus{border-color:#4b91bd;box-shadow:0 0 0 2px #7bbde822}
+.primary-btn{width:100%;height:45px;border:0;border-radius:9px;background:#0a4174;color:#fff;font-weight:800;cursor:pointer;margin-top:7px}
+.primary-btn:disabled{opacity:.6;cursor:wait}
+.hidden{display:none!important}
+.status{min-height:23px;font-size:12px;line-height:1.7;text-align:center;margin-top:9px;color:#247348}
+.status.error{color:#b42318}
+.note,.helper{font-size:11px;line-height:1.8;color:#71869a;text-align:center;margin:10px 0 0}
+.note{background:#f3f7fa;border-radius:8px;padding:9px;margin-bottom:12px}
+.logged-in{display:none;text-align:center;padding:16px 0 0}
+.logged-in h3{font-size:17px;color:#001d39;margin:0 0 8px}
+.logged-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.logged-actions a,.logged-actions button{border:0;border-radius:8px;padding:9px 14px;font-size:12px;font-weight:800;cursor:pointer}
+.go-home{background:#001d39;color:#fff}.signout{background:#edf3f7;color:#24445e}
+.sponsors{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px;padding-top:13px;border-top:1px solid #edf1f4}
+.sponsors small{width:100%;text-align:center;font-size:10px;color:#91a0ad}
+.sponsors img{max-width:75px;max-height:28px;object-fit:contain}.sponsor-name{font-size:10px;color:#71869a}
+footer{text-align:center;padding:12px;color:#8797a5;font-size:10px}
+@media(max-width:480px){header{height:56px;padding:0 4%}.brand{font-size:17px}.card{padding:22px 18px}main{padding:18px 12px}.branding h1{font-size:20px}}
 </style>
 </head>
 <body>
-<header class="top"><a class="brand" href="index.html"><span class="brand-mark">B</span><span id="brandName">بدر الحياة</span></a><a class="back" href="index.html">العودة للموقع ←</a></header>
+<header><a class="brand" href="index.html">BHG <span>بدر الحياة</span></a><a class="back" href="index.html">رجوع للموقع</a></header>
 <main>
-<div class="auth-layout">
-<section class="visual">
- <div class="visual-orbit"></div>
- <div class="visual-content">
-  <span class="visual-kicker">BHG • BADR ALHAYAH</span>
-  <h1>كل اللي يخص عقارك<br>في مكان واحد</h1>
-  <p>سجّل دخولك وتابع طلباتك ومحادثاتك، أو ادخل إلى مساحة عملك كموظف في بدر الحياة.</p>
-  <div class="visual-points">
-   <div class="point"><span class="point-icon">⌂</span><span>ابحث عن عقارك المناسب</span></div>
-   <div class="point"><span class="point-icon">↗</span><span>تابع طلباتك بسهولة</span></div>
-   <div class="point"><span class="point-icon">✉</span><span>تواصل مع فريقنا مباشرة</span></div>
-  </div>
- </div>
- <div class="visual-bottom"><span>بيع • إيجار • تسويق عقاري</span><span>ثقة تبدأ من هنا</span></div>
-</section>
-<section class="auth-card">
- <div class="auth-brand"><img id="loginLogo" alt="شعار بدر الحياة"><h2>أهلاً بيك في بدر الحياة</h2><p>اختار نوع حسابك وابدأ الآن</p></div>
+<section class="card">
+ <div class="branding"><img id="loginLogo" alt="شعار بدر الحياة"><h1 id="brandName">بدر الحياة</h1><p>تسجيل الدخول</p></div>
  <div class="role-switch">
-  <button class="role-btn active" id="customerRoleBtn" onclick="setRole('customer')">حساب عميل</button>
-  <button class="role-btn" id="employeeRoleBtn" onclick="setRole('employee')">دخول الموظفين</button>
+  <button class="role-btn active" id="customerRoleBtn" onclick="setRole('customer')">عميل</button>
+  <button class="role-btn" id="employeeRoleBtn" onclick="setRole('employee')">موظف</button>
  </div>
  <div id="customerPanel">
-  <div class="customer-mode"><button id="loginModeBtn" class="mode-link active" onclick="setCustomerMode('login')">تسجيل الدخول</button><button id="registerModeBtn" class="mode-link" onclick="setCustomerMode('register')">إنشاء حساب جديد</button></div>
-  <h3 class="form-title" id="customerFormTitle">دخول حساب العميل</h3>
-  <div id="customerNameField" class="field hidden"><label for="customerName">الاسم بالكامل</label><input id="customerName" type="text" autocomplete="name" placeholder="اكتب اسمك"></div>
+  <div class="customer-mode"><button id="loginModeBtn" class="mode-link active" onclick="setCustomerMode('login')">دخول</button><button id="registerModeBtn" class="mode-link" onclick="setCustomerMode('register')">حساب جديد</button></div>
+  <h2 class="form-title" id="customerFormTitle">دخول العميل</h2>
+  <div id="customerNameField" class="field hidden"><label for="customerName">الاسم</label><input id="customerName" type="text" autocomplete="name" placeholder="الاسم بالكامل"></div>
   <div class="field"><label for="customerEmail">البريد الإلكتروني</label><input id="customerEmail" type="email" autocomplete="email" placeholder="name@example.com"></div>
   <div class="field"><label for="customerPassword">كلمة المرور</label><input id="customerPassword" type="password" autocomplete="current-password" placeholder="كلمة المرور"></div>
-  <button id="customerSubmit" class="primary-btn" onclick="submitCustomer()">تسجيل الدخول</button>
+  <button id="customerSubmit" class="primary-btn" onclick="submitCustomer()">دخول</button>
   <div id="customerStatus" class="status" aria-live="polite"></div>
-  <div id="customerLoggedIn" class="logged-in"><h3 id="customerWelcome">أهلاً بيك</h3><p class="helper">حسابك متصل دلوقتي. تقدر ترجع للموقع وتتابع محادثاتك.</p><div class="logged-actions"><a class="go-home" href="index.html#customerChat">الانتقال للموقع</a><button class="signout" onclick="signOut()">تسجيل الخروج</button></div></div>
-  <p class="helper" id="customerHint">إنشاء حساب العميل مجاني، وتقدر من خلاله تتابع طلباتك وتتواصل مع فريق بدر الحياة.</p>
+  <div id="customerLoggedIn" class="logged-in"><h3 id="customerWelcome">تم تسجيل الدخول</h3><p class="helper">حسابك جاهز.</p><div class="logged-actions"><a class="go-home" href="index.html#customerChat">العودة للموقع</a><button class="signout" onclick="signOut()">خروج</button></div></div>
+  <p class="helper" id="customerHint">إنشاء حساب العميل مجاني.</p>
  </div>
  <div id="employeePanel" class="hidden">
-  <h3 class="form-title">دخول فريق بدر الحياة</h3>
-  <div class="employee-note">بيانات الدخول بتستلمها من إدارة الشركة. استخدم اسم المستخدم وكلمة المرور المخصصة ليك.</div>
-  <div class="field"><label for="employeeUsername">اسم المستخدم</label><input id="employeeUsername" type="text" autocomplete="username" placeholder="مثال: ahmed.saleh"></div>
+  <h2 class="form-title">دخول الموظف</h2>
+  <p class="note">استخدم اسم المستخدم وكلمة المرور اللذين استلمتهما من الإدارة.</p>
+  <div class="field"><label for="employeeUsername">اسم المستخدم</label><input id="employeeUsername" type="text" autocomplete="username" placeholder="اسم المستخدم"></div>
   <div class="field"><label for="employeePassword">كلمة المرور</label><input id="employeePassword" type="password" autocomplete="current-password" placeholder="كلمة المرور"></div>
-  <button id="employeeSubmit" class="primary-btn" onclick="signInEmployee()">دخول الموظف</button>
+  <button id="employeeSubmit" class="primary-btn" onclick="signInEmployee()">دخول</button>
   <div id="employeeStatus" class="status" aria-live="polite"></div>
-  <p class="helper">مش معاك حساب؟ تواصل مع إدارة بدر الحياة لإنشاء حساب موظف.</p>
  </div>
- <div id="loginSponsors" class="sponsors"><small>شركاء بدر الحياة</small></div>
+ <div id="loginSponsors" class="sponsors"><small>الرعاة</small></div>
 </section>
-</div>
 </main>
-<footer class="footer">© 2026 بدر الحياة — جميع الحقوق محفوظة</footer>
+<footer>© 2026 بدر الحياة</footer>
 <script>
 const SUPABASE_URL='https://lqycfhqmihobrjyycajr.supabase.co';
 const SUPABASE_KEY='sb_publishable_KMi-Q7lZ-dCTPnqIhIogIA_wnw2rnpH';
