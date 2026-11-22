@@ -1,13 +1,164 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>بوابة موظفي بدر الحياة</title><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>:root{--navy:#10243a;--gold:#c6a66a;--bg:#f4f6f9}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Cairo,Arial;color:#182838}.top{background:var(--navy);color:white;padding:18px 5%;font-weight:800;font-size:20px}.top span{color:var(--gold)}main{max-width:900px;margin:30px auto;padding:0 16px}.panel{background:#fff;border:1px solid #e5eaf0;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 8px 28px #10243a0a}.field{margin:12px 0}.field label{display:block;font-weight:700;margin-bottom:5px}.field input,.field textarea{width:100%;padding:12px;border:1px solid #dbe3eb;border-radius:10px;font:inherit}.btn{border:0;background:var(--gold);color:#14283a;padding:11px 18px;border-radius:10px;font:inherit;font-weight:800;cursor:pointer}.secondary{background:#e9eef3}.status{margin-top:10px;color:#26734d}.hidden{display:none!important}.thread{width:100%;text-align:right;padding:12px;border:1px solid #e4e9ef;border-radius:10px;background:#f9fafb;margin:7px 0;cursor:pointer;font:inherit}.msgs{max-height:350px;overflow:auto;background:#f3f6f8;border-radius:12px;padding:12px}.msg{background:white;border-radius:10px;padding:10px;margin:8px}.msg.mine{background:#e4f2e9}.muted{color:#6b7b8a}</style></head><body><header class="top">BHG <span>بدر الحياة</span> — بوابة الموظفين</header><main><section class="panel" id="login"><h2>تسجيل دخول الموظفين</h2><p class="muted">استخدم البريد الذي وصلته دعوة الشركة.</p><div class="field"><label>اسم المستخدم</label><input id="email" type="text" autocomplete="username"></div><div class="field"><label>كلمة المرور</label><input id="password" type="password" autocomplete="current-password"></div><button class="btn" onclick="signIn()">دخول</button><div id="loginStatus" class="status"></div></section><section class="panel hidden" id="portal"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><h2 id="welcome">أهلاً</h2><p id="role" class="muted"></p></div><button class="btn secondary" onclick="signOut()">تسجيل خروج</button></div><h3>محادثات الفريق</h3><div id="threadList">جارٍ تحميل المحادثات…</div><div id="conversation" class="hidden"><h3 id="threadTitle"></h3><div id="messages" class="msgs"></div><div class="field"><label>رسالتك</label><textarea id="message" rows="3" placeholder="اكتب رسالة…"></textarea></div><button class="btn" onclick="sendMessage()">إرسال</button><button class="btn secondary" onclick="refreshMessages()">تحديث</button><div id="chatStatus" class="status"></div></div></section></main><script>
-const URL='https://lqycfhqmihobrjyycajr.supabase.co',KEY='sb_publishable_KMi-Q7lZ-dCTPnqIhIogIA_wnw2rnpH';const db=supabase.createClient(URL,KEY);let user=null,profile=null,threadId=null;
-const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>بوابة موظفي بدر الحياة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--navy:#001d39;--blue:#0a4174;--sky:#7bbde8;--pale:#edf5fa;--ink:#102b43;--muted:#617b91;--line:#d8e6f0}
+*{box-sizing:border-box}body{margin:0;background:var(--pale);font-family:Cairo,Arial,sans-serif;color:var(--ink)}button,input,textarea,select{font:inherit}
+.top{background:var(--navy);color:#fff;padding:15px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;box-shadow:0 5px 20px #001d3920}.brand{font-size:21px;font-weight:800}.brand span{color:var(--sky)}.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+main{max-width:1180px;margin:26px auto;padding:0 16px}.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 8px 28px #001d3908}.login{max-width:470px;margin:9vh auto}.field{margin:12px 0}.field label{display:block;font-weight:700;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid #cbdce8;border-radius:11px;background:#fff;color:var(--ink);font:inherit}.field textarea{min-height:100px;resize:vertical}.btn{border:0;background:var(--blue);color:#fff;padding:10px 17px;border-radius:11px;font:inherit;font-weight:800;cursor:pointer}.btn.gold{background:var(--sky);color:var(--navy)}.btn.secondary{background:#e7f0f6;color:var(--navy)}.btn.danger{background:#fae7e7;color:#a32626}.btn:disabled{opacity:.6;cursor:wait}.status{margin-top:10px;line-height:1.8;color:#26734d}.muted{color:var(--muted)}.hidden{display:none!important}
+.navbar{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 20px}.navbtn{border:1px solid var(--line);background:#fff;color:var(--navy);padding:10px 15px;border-radius:11px;font-weight:800;cursor:pointer}.navbtn.active{background:var(--navy);color:#fff;border-color:var(--navy)}.tab{display:none}.tab.active{display:block}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.property{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}.property img{width:100%;height:190px;object-fit:cover;display:block;background:#e8f0f6}.property-body{padding:14px}.property h3{margin:0 0 6px}.price{font-size:19px;color:var(--blue);font-weight:800;margin:8px 0}.tag{display:inline-block;background:#e5f1f9;color:var(--blue);padding:4px 9px;border-radius:30px;font-size:12px;font-weight:800}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.thread-layout{display:grid;grid-template-columns:300px 1fr;gap:14px}.thread-list{border:1px solid var(--line);border-radius:13px;padding:8px;max-height:520px;overflow:auto}.thread{width:100%;text-align:right;padding:12px;border:1px solid transparent;border-radius:10px;background:#f4f8fb;margin:5px 0;cursor:pointer;font:inherit;color:var(--ink)}.thread.active{border-color:var(--sky);background:#e7f3fb}.conversation{border:1px solid var(--line);border-radius:13px;padding:12px;min-height:340px;display:flex;flex-direction:column}.msgs{flex:1;max-height:390px;overflow:auto;background:#f3f7fa;border-radius:12px;padding:12px}.msg{background:#fff;border-radius:10px;padding:10px;margin:8px;max-width:85%;box-shadow:0 2px 8px #001d3908}.msg.mine{background:#e2f2e8;margin-right:auto}.msg small{color:var(--muted);display:block;font-size:11px;margin-bottom:3px}.empty{padding:22px;text-align:center;color:var(--muted);background:#f7fafc;border-radius:12px}
+@media(max-width:760px){main{margin:16px auto}.panel{padding:16px}.formgrid,.cards{grid-template-columns:1fr}.thread-layout{grid-template-columns:1fr}.thread-list{max-height:210px}.top{padding:13px 4%}.brand{font-size:18px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">BHG <span>بدر الحياة</span> — بوابة الموظفين</div><div class="top-actions"><a class="btn secondary" href="index.html" style="text-decoration:none">العودة للموقع</a><button id="logoutBtn" class="btn gold hidden" onclick="signOut()">تسجيل خروج</button></div></header>
+<main>
+<section class="panel login" id="login">
+<h2>تسجيل دخول الموظفين</h2><p class="muted">اكتب اسم المستخدم وكلمة المرور اللي استلمتهم من الإدارة.</p>
+<div class="field"><label>اسم المستخدم</label><input id="username" type="text" autocomplete="username" placeholder="مثال: ahmed.saleh"></div>
+<div class="field"><label>كلمة المرور</label><input id="password" type="password" autocomplete="current-password"></div>
+<button class="btn gold" style="width:100%" onclick="signIn()">دخول</button><div id="loginStatus" class="status"></div>
+</section>
+<section id="portal" class="hidden">
+<div class="panel toolbar"><div><h2 id="welcome" style="margin:0">أهلاً</h2><div id="role" class="muted"></div></div><div><span class="tag">بوابة عمل بدر الحياة</span></div></div>
+<nav class="navbar">
+<button class="navbtn active" onclick="showTab('overview',this)">الرئيسية</button>
+<button class="navbtn" onclick="showTab('myProperties',this);loadMyProperties()">عقاراتي</button>
+<button class="navbtn" onclick="showTab('addProperty',this);resetPropertyForm()">＋ إضافة عقار</button>
+<button class="navbtn" onclick="showTab('chat',this);loadThreads()">المحادثات</button>
+</nav>
+<section id="tab-overview" class="tab active">
+<div class="panel"><h2>مرحباً بك في بوابة الموظفين</h2><p class="muted">من هنا تقدر تضيف عقاراتك وتتابعها وتتواصل مع العملاء وفريق العمل من المحادثات المخصصة لك.</p><div class="actions"><button class="btn gold" onclick="showTab('addProperty',document.querySelectorAll('.navbtn')[2]);resetPropertyForm()">إضافة عقار جديد</button><button class="btn secondary" onclick="showTab('chat',document.querySelectorAll('.navbtn')[3]);loadThreads()">فتح المحادثات</button></div></div>
+</section>
+<section id="tab-myProperties" class="tab">
+<div class="panel"><div class="toolbar"><div><h2 style="margin:0">عقاراتي</h2><p class="muted" style="margin:4px 0 0">العقارات التي أضفتها بحسابك.</p></div><button class="btn secondary" onclick="loadMyProperties()">تحديث</button></div><div id="propertyList" class="cards"><div class="empty">جارٍ تحميل العقارات…</div></div></div>
+</section>
+<section id="tab-addProperty" class="tab">
+<div class="panel"><h2 id="propertyFormTitle">إضافة عقار جديد</h2>
+<div class="formgrid">
+<div class="field"><label>عنوان العقار *</label><input id="pTitle" placeholder="مثال: شقة للبيع في الحي المتميز"></div>
+<div class="field"><label>السعر بالجنيه</label><input id="pPrice" type="number" min="0"></div>
+<div class="field"><label>نوع العرض</label><select id="pListing"><option value="sale">للبيع</option><option value="rent">للإيجار</option></select></div>
+<div class="field"><label>نوع العقار</label><select id="pType"><option>شقة</option><option>فيلا</option><option>محل</option><option>أرض</option><option>إداري</option><option>تجاري</option></select></div>
+<div class="field"><label>العنوان / المنطقة</label><input id="pAddress" placeholder="مدينة بدر - الحي..."></div>
+<div class="field"><label>المساحة بالمتر</label><input id="pArea" type="number" min="0"></div>
+<div class="field"><label>عدد الغرف</label><input id="pBeds" type="number" min="0"></div>
+<div class="field"><label>عدد الحمامات</label><input id="pBaths" type="number" min="0"></div>
+<div class="field full"><label>الوصف والتفاصيل</label><textarea id="pDescription" placeholder="اكتب تفاصيل العقار..."></textarea></div>
+<div class="field full"><label>صور العقار (JPG / PNG / WEBP - حتى 5MB للصورة)</label><input id="pImages" type="file" accept="image/jpeg,image/png,image/webp" multiple><small class="muted">عند تعديل عقار وترك الصور فارغة، سنحتفظ بالصور الحالية.</small></div>
+<div class="field"><label>الحالة</label><select id="pStatus"><option value="available">متاح</option><option value="reserved">محجوز</option><option value="sold">تم البيع</option><option value="rented">تم التأجير</option></select></div>
+</div>
+<div class="actions"><button id="savePropertyBtn" class="btn gold" onclick="saveProperty()">حفظ العقار</button><button class="btn secondary" onclick="showTab('myProperties',document.querySelectorAll('.navbtn')[1]);loadMyProperties()">إلغاء</button></div><div id="propertyStatus" class="status"></div>
+</div>
+</section>
+<section id="tab-chat" class="tab">
+<div class="panel"><div class="toolbar"><div><h2 style="margin:0">المحادثات</h2><p class="muted" style="margin:4px 0 0">المحادثات التي أضافتك الإدارة إليها أو المحادثات المخصصة لك.</p></div><button class="btn secondary" onclick="loadThreads()">تحديث</button></div>
+<div class="thread-layout"><div id="threadList" class="thread-list"><div class="empty">جارٍ تحميل المحادثات…</div></div>
+<div class="conversation"><h3 id="threadTitle" style="margin:4px 4px 12px">اختر محادثة من القائمة</h3><div id="messages" class="msgs"><div class="empty">ستظهر الرسائل هنا.</div></div><div class="field" style="margin-bottom:5px"><label>رسالتك</label><textarea id="message" rows="2" placeholder="اكتب ردك..." disabled></textarea></div><div class="actions"><button id="sendBtn" class="btn gold" onclick="sendMessage()" disabled>إرسال</button><button class="btn secondary" onclick="refreshMessages()">تحديث الرسائل</button></div><div id="chatStatus" class="status"></div></div></div>
+</div>
+</section>
+</section>
+</main>
+<script>
+const URL='https://lqycfhqmihobrjyycajr.supabase.co',KEY='sb_publishable_KMi-Q7lZ-dCTPnqIhIogIA_wnw2rnpH';
+const db=supabase.createClient(URL,KEY);let user=null,profile=null,threadId=null,editingId=null,cachedProperties=[];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function status(id,t,bad=false){$(id).textContent=t;$(id).style.color=bad?'#b42318':'#26734d'}
-async function signIn(){status('loginStatus','جارٍ التحقق…');const loginName=$('email').value.trim().toLowerCase();const loginEmail=loginName.includes('@')?loginName:loginName+'@staff.bhg.local';const {data,error}=await db.auth.signInWithPassword({email:loginEmail,password:$('password').value});if(error){status('loginStatus','تعذر الدخول: '+error.message,true);return;}await loadPortal(data.user);}
-async function loadPortal(u){user=u;const {data:p,error}=await db.from('platform_profiles').select('display_name,account_type,role_key,active').eq('user_id',u.id).maybeSingle();if(error||!p||p.account_type!=='employee'||!p.active){await db.auth.signOut();status('loginStatus','هذا الحساب غير مسجل كموظف نشط.',true);return;}profile=p;$('login').classList.add('hidden');$('portal').classList.remove('hidden');$('welcome').textContent='أهلاً '+(p.display_name||u.email);const labels={sales:'مبيعات',marketing:'تسويق',support:'خدمة العملاء',manager:'مدير فريق'};$('role').textContent='القسم: '+(labels[p.role_key]||'موظف');loadThreads();}
-async function loadThreads(){const box=$('threadList');box.textContent='جارٍ تحميل محادثاتك…';const {data,error}=await db.from('chat_threads').select('id,title,thread_type,updated_at').order('updated_at',{ascending:false});if(error){box.textContent='تعذر تحميل المحادثات: '+error.message;return;}if(!data?.length){box.textContent='لا توجد محادثات مخصصة لك حتى الآن.';return;}box.innerHTML=data.map(t=>'<button class="thread" onclick="openThread(\''+t.id+'\',\''+esc(t.title||'محادثة')+'\')">'+esc(t.title||'محادثة')+' — '+esc(t.thread_type)+'</button>').join('');}
-async function openThread(id,title){threadId=id;$('conversation').classList.remove('hidden');$('threadTitle').textContent=title;await refreshMessages();}
-async function refreshMessages(){if(!threadId)return;const {data,error}=await db.from('chat_messages').select('sender_id,body,created_at').eq('thread_id',threadId).order('created_at',{ascending:true}).limit(200);if(error){status('chatStatus','تعذر تحميل الرسائل: '+error.message,true);return;}const box=$('messages');box.innerHTML=!data?.length?'لا توجد رسائل بعد.':data.map(m=>'<div class="msg '+(m.sender_id===user.id?'mine':'')+'"><small>'+esc(m.created_at)+'</small><div>'+esc(m.body||'')+'</div></div>').join('');box.scrollTop=box.scrollHeight;}
-async function sendMessage(){const body=$('message').value.trim();if(!body||!threadId)return;const {error}=await db.from('chat_messages').insert({thread_id:threadId,sender_id:user.id,body});if(error){status('chatStatus','تعذر إرسال الرسالة: '+error.message,true);return;}$('message').value='';status('chatStatus','تم الإرسال.');refreshMessages();}
-async function signOut(){await db.auth.signOut();user=null;profile=null;threadId=null;$('portal').classList.add('hidden');$('login').classList.remove('hidden');$('conversation').classList.add('hidden');}
-db.auth.getSession().then(({data})=>{if(data.session)loadPortal(data.session.user);});
-</script></body></html>
+function showTab(name,button){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$('tab-'+name).classList.add('active');document.querySelectorAll('.navbtn').forEach(x=>x.classList.remove('active'));if(button)button.classList.add('active')}
+async function signIn(){
+ const name=$('username').value.trim().toLowerCase(),password=$('password').value;
+ if(!name||!password){status('loginStatus','اكتب اسم المستخدم وكلمة المرور.',true);return}
+ status('loginStatus','جارٍ التحقق من بيانات الدخول…');
+ const email=name.includes('@')?name:name+'@staff.bhg.local';
+ const {data,error}=await db.auth.signInWithPassword({email,password});
+ if(error){status('loginStatus','تعذر الدخول: '+error.message,true);return}
+ await loadPortal(data.user);
+}
+async function loadPortal(u){
+ user=u;
+ const {data:p,error}=await db.from('platform_profiles').select('display_name,account_type,role_key,active').eq('user_id',u.id).maybeSingle();
+ if(error||!p||p.account_type!=='employee'||!p.active){await db.auth.signOut();user=null;status('loginStatus',error?'تعذر قراءة بيانات الموظف: '+error.message:'الحساب غير مفعل كموظف. راجع الإدارة.',true);return}
+ profile=p;$('login').classList.add('hidden');$('portal').classList.remove('hidden');$('logoutBtn').classList.remove('hidden');
+ $('welcome').textContent='أهلاً '+(p.display_name||u.email);
+ const labels={sales:'مبيعات',marketing:'تسويق',support:'خدمة العملاء',manager:'مدير فريق'};
+ $('role').textContent='القسم: '+(labels[p.role_key]||'موظف');
+ loadMyProperties();
+}
+async function signOut(){await db.auth.signOut();user=null;profile=null;threadId=null;$('portal').classList.add('hidden');$('login').classList.remove('hidden');$('logoutBtn').classList.add('hidden');$('username').value='';$('password').value='';$('password').focus()}
+function resetPropertyForm(){editingId=null;$('propertyFormTitle').textContent='إضافة عقار جديد';['pTitle','pPrice','pAddress','pArea','pBeds','pBaths','pDescription'].forEach(id=>$(id).value='');$('pListing').value='sale';$('pType').value='شقة';$('pStatus').value='available';$('pImages').value='';status('propertyStatus','')}
+function editMyProperty(id){
+ const p=cachedProperties.find(x=>x.id===id);if(!p)return;
+ editingId=id;$('propertyFormTitle').textContent='تعديل بيانات العقار';
+ $('pTitle').value=p.title||'';$('pPrice').value=p.price??'';$('pListing').value=p.listing_type||'sale';$('pType').value=p.property_type||'شقة';
+ $('pAddress').value=p.address||'';$('pArea').value=p.area??'';$('pBeds').value=p.bedrooms??'';$('pBaths').value=p.bathrooms??'';
+ $('pDescription').value=p.description||'';$('pStatus').value=p.status||'available';$('pImages').value='';
+ status('propertyStatus','اترك الصور فارغة للاحتفاظ بالصور الحالية.');showTab('addProperty',document.querySelectorAll('.navbtn')[2]);
+}
+async function uploadPropertyImages(files){
+ const images=[],paths=[];
+ for(let i=0;i<files.length;i++){
+  const f=files[i];if(f.size>5*1024*1024)throw new Error('الصورة '+f.name+' أكبر من 5MB.');
+  if(!['image/jpeg','image/png','image/webp'].includes(f.type))throw new Error('نوع الصورة غير مسموح: '+f.name);
+ }
+ for(let i=0;i<files.length;i++){
+  const f=files[i],safeName=f.name.replace(/[^\w.-]/g,'_'),path=user.id+'/employee-'+Date.now()+'-'+i+'-'+safeName;
+  const {error}=await db.storage.from('property-images').upload(path,f,{contentType:f.type,upsert:false});
+  if(error)throw new Error('فشل رفع الصور: '+error.message);
+  paths.push(path);images.push(db.storage.from('property-images').getPublicUrl(path).data.publicUrl);
+ }
+ return {images,paths};
+}
+async function saveProperty(){
+ const btn=$('savePropertyBtn');if(!$('pTitle').value.trim()){status('propertyStatus','اكتب عنوان العقار أولاً.',true);return}
+ btn.disabled=true;status('propertyStatus','جارٍ حفظ العقار…');let uploaded=[];
+ try{
+  const old=editingId?cachedProperties.find(p=>p.id===editingId):null;
+  if(editingId&&!old)throw new Error('العقار غير موجود في قائمتك. حدّث القائمة وحاول مرة أخرى.');
+  const files=Array.from($('pImages').files||[]);const up=await uploadPropertyImages(files);uploaded=up.paths;
+  const payload={title:$('pTitle').value.trim(),price:$('pPrice').value?Number($('pPrice').value):null,listing_type:$('pListing').value,property_type:$('pType').value,address:$('pAddress').value.trim(),area:$('pArea').value?Number($('pArea').value):null,bedrooms:$('pBeds').value?Number($('pBeds').value):null,bathrooms:$('pBaths').value?Number($('pBaths').value):null,description:$('pDescription').value.trim(),status:$('pStatus').value,images:[...(old?.images||[]),...up.images],updated_at:new Date().toISOString()};
+  let result;if(editingId)result=await db.from('properties').update(payload).eq('id',editingId).eq('created_by',user.id);else result=await db.from('properties').insert({...payload,created_by:user.id});
+  if(result.error)throw new Error(result.error.message);
+  status('propertyStatus','تم حفظ العقار.');resetPropertyForm();await loadMyProperties();showTab('myProperties',document.querySelectorAll('.navbtn')[1]);
+ }catch(e){if(uploaded.length)await db.storage.from('property-images').remove(uploaded);status('propertyStatus','تعذر حفظ العقار: '+(e.message||e),true)}
+ finally{btn.disabled=false}
+}
+async function loadMyProperties(){
+ const box=$('propertyList');box.innerHTML='<div class="empty">جارٍ تحميل عقاراتك…</div>';
+ const {data,error}=await db.from('properties').select('*').eq('created_by',user.id).order('created_at',{ascending:false});
+ if(error){box.innerHTML='<div class="empty">تعذر تحميل العقارات: '+esc(error.message)+'</div>';return}
+ cachedProperties=data||[];if(!cachedProperties.length){box.innerHTML='<div class="empty">لسه مفيش عقارات مضافة بحسابك. اضغط «إضافة عقار» للبدء.</div>';return}
+ const labels={available:'متاح',reserved:'محجوز',sold:'تم البيع',rented:'تم التأجير'};
+ box.innerHTML=cachedProperties.map(p=>{const image=Array.isArray(p.images)&&p.images.length?p.images[0]:'';return '<article class="property">'+(image?'<img src="'+esc(image)+'" alt="'+esc(p.title)+'">':'<div class="property-empty empty">بدون صورة</div>')+'<div class="property-body"><span class="tag">'+(p.listing_type==='rent'?'للإيجار':'للبيع')+'</span> <span class="tag">'+esc(labels[p.status]||p.status||'متاح')+'</span><h3>'+esc(p.title)+'</h3><div class="muted">'+esc(p.address||'مدينة بدر')+'</div><div class="price">'+(p.price?Number(p.price).toLocaleString('en-US')+' جنيه':'السعر عند التواصل')+'</div><div class="actions"><button class="btn secondary" onclick="editMyProperty(\''+p.id+'\')">تعديل البيانات</button></div></div></article>'}).join('');
+}
+async function loadThreads(){
+ const box=$('threadList');box.innerHTML='<div class="empty">جارٍ تحميل المحادثات…</div>';threadId=null;$('threadTitle').textContent='اختر محادثة من القائمة';$('messages').innerHTML='<div class="empty">ستظهر الرسائل هنا.</div>';$('message').disabled=true;$('sendBtn').disabled=true;
+ const {data:members,error:memberError}=await db.from('chat_participants').select('thread_id').eq('user_id',user.id);
+ if(memberError){box.innerHTML='<div class="empty">تعذر تحميل عضويات المحادثات: '+esc(memberError.message)+'</div>';return}
+ const ids=[...new Set((members||[]).map(x=>x.thread_id).filter(Boolean))];if(!ids.length){box.innerHTML='<div class="empty">لا توجد محادثات مخصصة لك حتى الآن. اطلب من الإدارة إضافتك للمحادثة.</div>';return}
+ const {data,error}=await db.from('chat_threads').select('id,title,thread_type,updated_at').in('id',ids).order('updated_at',{ascending:false});
+ if(error){box.innerHTML='<div class="empty">تعذر تحميل المحادثات: '+esc(error.message)+'</div>';return}
+ if(!data?.length){box.innerHTML='<div class="empty">لا توجد محادثات متاحة.</div>';return}
+ box.innerHTML=data.map(t=>'<button class="thread" id="thread-'+t.id+'" onclick="openThread(\''+t.id+'\',\''+esc(t.title||'محادثة')+'\')"><b>'+esc(t.title||'محادثة')+'</b><br><small class="muted">'+(t.thread_type==='customer'?'محادثة عميل':'محادثة فريق')+'</small></button>').join('');
+}
+async function openThread(id,title){threadId=id;document.querySelectorAll('.thread').forEach(x=>x.classList.remove('active'));$('thread-'+id)?.classList.add('active');$('threadTitle').textContent=title;$('message').disabled=false;$('sendBtn').disabled=false;await refreshMessages()}
+async function refreshMessages(){
+ if(!threadId)return;const {data,error}=await db.from('chat_messages').select('sender_id,body,attachment_url,created_at').eq('thread_id',threadId).order('created_at',{ascending:true}).limit(200);
+ if(error){status('chatStatus','تعذر تحميل الرسائل: '+error.message,true);return}
+ const box=$('messages');box.innerHTML=!data?.length?'<div class="empty">لا توجد رسائل بعد. ابدأ المحادثة.</div>':data.map(m=>'<div class="msg '+(m.sender_id===user.id?'mine':'')+'"><small>'+(m.sender_id===user.id?'أنت':'رسالة واردة')+' • '+esc(new Date(m.created_at).toLocaleString('ar-EG'))+'</small><div>'+esc(m.body||'')+'</div>'+(m.attachment_url?'<a href="'+esc(m.attachment_url)+'" target="_blank" rel="noopener">عرض المرفق</a>':'')+'</div>').join('');
+ box.scrollTop=box.scrollHeight;
+}
+async function sendMessage(){
+ const body=$('message').value.trim();if(!body||!threadId)return;
+ const {error}=await db.from('chat_messages').insert({thread_id:threadId,sender_id:user.id,body});
+ if(error){status('chatStatus','تعذر إرسال الرسالة: '+error.message,true);return}
+ $('message').value='';status('chatStatus','تم إرسال الرسالة.');await refreshMessages();
+}
+db.auth.getSession().then(({data})=>{if(data.session)loadPortal(data.session.user)});
+</script>
+</body></html>
