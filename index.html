@@ -80,6 +80,44 @@ body{background:var(--bhg-paper)!important;color:var(--bhg-ink)!important;font-f
 .layout-order-item.dragging{opacity:.45}.layout-order-item button{border:0;border-radius:7px;padding:5px 9px;background:#e1ebf3;cursor:pointer;font-weight:800}
 .settings-box input[type=range]{padding:0;accent-color:#0a4174}
 @media(max-width:700px){body{font-size:var(--bhg-font-mobile)!important}.hero{min-height:var(--bhg-hero-mobile)!important}.section{padding-block:var(--bhg-section-mobile)!important}#propertyGrid .card .photo,#propertyGrid .card .photo img{min-height:var(--bhg-property-mobile)!important}#propertyGrid .card .photo img{height:var(--bhg-property-mobile)!important}}
+
+/* BHG commercial packages */
+#plans{background:linear-gradient(180deg,#f7fbfe 0%,#eaf4fa 100%)!important;padding:76px 5%!important}
+.pricing-head{text-align:center;max-width:800px;margin:0 auto 28px}
+.pricing-kicker{display:inline-block;letter-spacing:2px;font-size:11px;font-weight:800;color:#28709c;background:#dcedf8;padding:7px 13px;border-radius:50px}
+.pricing-head h2{font-size:clamp(28px,4vw,43px);margin:14px 0 8px;color:#001d39}
+.pricing-head p{color:#58748b;line-height:1.9;margin:0 auto;max-width:640px}
+.pricing-switch{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:25px auto 20px}
+.pricing-kind{border:1px solid #c7dcea;border-radius:13px;padding:12px 24px;background:#fff;color:#153c5a;font:inherit;font-weight:800;cursor:pointer;transition:.2s}
+.pricing-kind.active{background:#001d39;border-color:#001d39;color:#fff;box-shadow:0 8px 22px #001d392b}
+.pricing-duration{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;margin:0 auto 18px;color:#42617a;font-weight:700}
+.duration-buttons{display:flex;gap:6px;flex-wrap:wrap;background:#fff;padding:5px;border:1px solid #d3e3ee;border-radius:13px}
+.duration-btn{border:0;background:transparent;color:#31536e;font:inherit;font-weight:700;padding:8px 14px;border-radius:9px;cursor:pointer}
+.duration-btn.active{background:#7bbde8;color:#001d39}
+.package-intro{text-align:center;min-height:28px;color:#527189;margin:8px 0 18px;font-size:14px}
+.package-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1300px;margin:0 auto}
+.package-card{position:relative;background:#fff;border:1px solid #d6e5ef;border-radius:20px;padding:25px 22px 22px;box-shadow:0 12px 32px #001d390d;display:flex;flex-direction:column;min-height:100%;transition:transform .2s,box-shadow .2s}
+.package-card:hover{transform:translateY(-5px);box-shadow:0 20px 42px #001d3919}
+.package-card.popular{border:2px solid #2876a6;box-shadow:0 16px 38px #1e638c20}
+.package-ribbon{position:absolute;top:14px;left:14px;background:#e2f2fc;color:#13547f;border-radius:30px;padding:5px 10px;font-size:11px;font-weight:800}
+.package-icon{width:46px;height:46px;border-radius:14px;background:#eaf4fa;color:#0a4174;display:grid;place-items:center;font-size:23px;margin-bottom:15px}
+.package-card h3{margin:0 0 5px;font-size:23px;color:#001d39}
+.package-subtitle{color:#688196;font-size:13px;line-height:1.7;min-height:42px}
+.package-price-line{display:flex;align-items:baseline;gap:7px;margin:17px 0 3px}
+.package-price{font-size:33px;font-weight:900;letter-spacing:-1px;color:#0a4174}
+.package-currency{font-size:13px;color:#5b7488;font-weight:700}
+.package-total{font-size:12px;color:#71899b;margin-bottom:14px}
+.package-saving{display:inline-block;align-self:flex-start;background:#e8f7ed;color:#207344;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:800;margin-bottom:13px}
+.package-features{list-style:none;margin:8px 0 20px;padding:0;display:grid;gap:10px;color:#38566e;font-size:13px;line-height:1.65}
+.package-features li{display:flex;gap:8px;align-items:flex-start}
+.package-features li:before{content:'✓';flex:0 0 19px;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;background:#e7f4fb;color:#0b5b89;font-weight:900;font-size:11px;margin-top:1px}
+.package-cta{margin-top:auto;display:block;width:100%;padding:12px;border:0;border-radius:12px;background:#001d39;color:#fff;text-align:center;font:inherit;font-weight:800;cursor:pointer;transition:.2s}
+.package-cta:hover{background:#0a4174}
+.package-card.popular .package-cta{background:#0a6c9e}
+.package-footnote{max-width:950px;margin:24px auto 0;text-align:center;color:#6a8295;font-size:12px;line-height:1.9}
+.package-request-status{text-align:center;min-height:22px;margin-top:12px;font-weight:700;color:#a33}
+@media(max-width:900px){.package-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){#plans{padding:48px 4%!important}.package-grid{grid-template-columns:1fr;max-width:440px}.package-card{padding:22px 19px}.pricing-duration{display:block;text-align:center}.duration-buttons{justify-content:center;margin-top:8px}.duration-btn{padding:8px 11px}.package-price{font-size:30px}}
 </style>
 </head>
 <body>
@@ -91,7 +129,29 @@ body{background:var(--bhg-paper)!important;color:var(--bhg-ink)!important;font-f
 <section class="section" id="sale"><div class="section-head"><div><h2>عقارات مميزة</h2><p>اختيارات مميزة للبيع والإيجار</p></div></div><div class="grid" id="propertyGrid"></div><div class="empty" id="empty">مفيش عقارات مطابقة للبحث. جرّب تغيير الفلاتر.</div></section>
 <section class="section about" id="about"><div><div class="eyebrow">خبرة.. ثقة.. اختيار مناسب</div><h2>مش مجرد عقار،<br>دي بداية لحياة جديدة</h2><p>هدفنا نسهل عليك رحلة البحث عن العقار المناسب، من أول تحديد احتياجاتك لحد ما توصل لاختيارك بثقة ووضوح. تواصل معانا وهنساعدك تدور على أفضل الخيارات المتاحة.</p><div class="features"><div class="feature"><b>اختيارات متنوعة</b>بيع وإيجار</div><div class="feature"><b>تواصل مباشر</b>استفسار سريع</div><div class="feature"><b>دعم مستمر</b>معاك خطوة بخطوة</div></div></div><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80" alt="واجهة منزل حديث"></section>
 <section class="section" id="sponsors" aria-label="شركاء بدر الحياة"><div id="sponsorGrid"><div class="empty" style="display:block">جارٍ تحميل الرعاة…</div></div></section>
-<section class="section" id="plans" style="background:#fff"><div class="section-head"><div><h2>باقات العضوية</h2><p>اختر الباقة المناسبة واطلب الاشتراك</p></div></div><div id="planGrid" class="grid"><div class="empty" style="display:block">جارٍ تحميل الباقات…</div></div></section>
+<section class="section" id="plans">
+ <div class="pricing-head">
+  <span class="pricing-kicker">BHG BUSINESS PARTNERSHIPS</span>
+  <h2>خلّي نشاطك في واجهة مدينة بدر</h2>
+  <p>إعلانك يوصل للباحثين عن عقار، أو خلي علامتك التجارية شريكًا ظاهرًا مع بدر الحياة.</p>
+ </div>
+ <div class="pricing-switch" role="tablist" aria-label="نوع الباقة">
+  <button class="pricing-kind active" id="adKindBtn" onclick="setPackageKind('ad')">إعلانات البانر</button>
+  <button class="pricing-kind" id="sponsorKindBtn" onclick="setPackageKind('sponsor')">باقات الرعاية</button>
+ </div>
+ <div class="pricing-duration"><span>اختار مدة التعاقد</span>
+  <div class="duration-buttons">
+   <button class="duration-btn active" data-months="1" onclick="setPackageDuration(1,this)">شهر</button>
+   <button class="duration-btn" data-months="3" onclick="setPackageDuration(3,this)">3 شهور</button>
+   <button class="duration-btn" data-months="6" onclick="setPackageDuration(6,this)">6 شهور</button>
+   <button class="duration-btn" data-months="12" onclick="setPackageDuration(12,this)">سنة</button>
+  </div>
+ </div>
+ <div id="packageIntro" class="package-intro"></div>
+ <div id="packageCards" class="package-grid"></div>
+ <p class="package-footnote">الأسعار بالجنيه المصري وبسعر إطلاق خاص. الباقات تخص الظهور داخل موقع بدر الحياة فقط، ولا تشمل ميزانية إعلانات Meta أو Google. التصميمات والصور يقدّمها المعلن، ويمكن الاتفاق على خدمات إضافية بشكل منفصل.</p>
+ <div id="packageRequestStatus" class="package-request-status" aria-live="polite"></div>
+</section>
 <section class="section" id="account"><div class="section-head"><div><h2>حسابك على بدر الحياة</h2><p>أنشئ حسابًا لمتابعة طلباتك والتواصل معنا</p></div></div><div class="settings-box" style="position:static;max-width:520px;margin:0 auto;box-shadow:0 8px 25px #0001"><div id="accountLoggedOut"><label>الاسم (لإنشاء حساب)</label><input id="accountName" placeholder="اسمك"><label>البريد الإلكتروني</label><input id="accountEmail" type="email" placeholder="name@example.com"><label>كلمة المرور (8 أحرف على الأقل)</label><input id="accountPassword" type="password" minlength="8"><div class="settings-actions"><button onclick="customerSignUp()">إنشاء حساب</button><button class="secondary" onclick="customerSignIn()">دخول</button></div></div><div id="accountLoggedIn" style="display:none"><p id="accountWelcome"></p><button class="secondary" onclick="customerSignOut()">تسجيل الخروج</button></div><div id="accountStatus" class="status"></div></div></section>
 <section class="section" id="customerChat" style="background:#f0f3f7"><div class="section-head"><div><h2>محادثات العملاء</h2><p>راسل فريق بدر الحياة مباشرة من الموقع</p></div></div><div class="settings-box" style="position:static;max-width:720px;margin:0 auto;box-shadow:0 8px 25px #0001"><div id="chatAuthNotice">سجّل الدخول أولاً من قسم حسابي لبدء المحادثة.</div><div id="customerChatBox" style="display:none"><div id="customerMessages" style="height:300px;overflow:auto;background:#f4f6f8;border-radius:12px;padding:10px;margin-bottom:12px"></div><textarea id="customerMessage" placeholder="اكتب رسالتك…" style="width:100%;min-height:90px;padding:12px;border:1px solid #dbe3eb;border-radius:10px;font:inherit"></textarea><div class="settings-actions"><button onclick="sendCustomerMessage()">إرسال</button><button class="secondary" onclick="refreshCustomerChat()">تحديث الرسائل</button></div></div><div id="customerChatStatus" class="status"></div></div></section>
 <section class="contact" id="contact"><h2>بتدور على عقار؟</h2><p>سيب استفسارك أو تواصل معانا مباشرة، وهنساعدك تختار.</p><a class="btn" id="wa" href="https://wa.me/201000000000" target="_blank">تواصل عبر واتساب</a><a class="btn" id="fbLink" href="#" target="_blank" style="margin-right:8px;background:#fff;color:#10243a">صفحتنا على فيسبوك</a></section>
