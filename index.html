@@ -188,6 +188,19 @@ body{background:var(--social-bg)!important}
 @media(max-width:1100px){.feed-layout{grid-template-columns:190px minmax(0,1fr)}.feed-sidebar-right{display:none}}
 @media(max-width:760px){.top{position:sticky;padding:8px 12px}.brand{font-size:20px}.nav{gap:3px;justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;width:100%;padding-bottom:2px}.nav a{white-space:nowrap;font-size:11px;padding:7px 8px}.hero{min-height:0!important;padding:28px 16px!important}.hero-content{width:100%}.hero h1{font-size:29px!important}.hero p{font-size:13px!important}.hero .search{grid-template-columns:1fr 1fr!important;padding:10px!important;gap:7px}.hero .search button{grid-column:1/-1}.social-feed{padding:20px 12px 38px!important}.feed-layout{display:block}.feed-sidebar-left{display:none}.feed-composer{padding:12px}.feed-filter{padding:12px}.feed-filter span:last-child{display:none}#propertyGrid .card .photo{height:245px!important}#propertyGrid .card .body{padding:14px!important}}
 
+
+/* BHG alternating property post layout: image/details side by side */
+#propertyGrid .card{display:flex!important;flex-direction:row!important;direction:rtl!important;align-items:stretch!important;min-height:330px!important}
+#propertyGrid .card:nth-child(even){direction:ltr!important}
+#propertyGrid .card .photo{width:50%!important;flex:0 0 50%!important;height:330px!important;min-height:330px!important}
+#propertyGrid .card .photo img{width:100%!important;height:100%!important;min-height:330px!important;object-fit:cover!important}
+#propertyGrid .card .body{width:50%!important;flex:1 1 50%!important;direction:rtl!important;text-align:right!important;justify-content:center!important;padding:24px!important}
+@media(max-width:760px){
+ #propertyGrid .card,#propertyGrid .card:nth-child(even){flex-direction:column!important;direction:rtl!important;min-height:0!important}
+ #propertyGrid .card .photo{width:100%!important;flex:0 0 auto!important;height:245px!important;min-height:245px!important}
+ #propertyGrid .card .photo img{height:245px!important;min-height:245px!important}
+ #propertyGrid .card .body{width:100%!important;flex:1 1 auto!important;padding:16px!important}
+}
 </style>
 </head>
 <body>
