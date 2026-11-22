@@ -215,6 +215,12 @@ async function saveSettings(){
 }
 async function resetSettings(){if(!window.siteDb){alert('قاعدة البيانات غير متصلة');return;}const {error}=await window.siteDb.from('site_settings').upsert({setting_key:'main',settings:defaultSettings,updated_at:new Date().toISOString()},{onConflict:'setting_key'});if(error){console.error(error);alert('تعذر استعادة الإعدادات الافتراضية.');return;}window.bhgSharedSettings={...defaultSettings};try{localStorage.setItem('propertySiteSettings',JSON.stringify(defaultSettings));}catch(e){}applySettings(defaultSettings);closeSettings();}
 window.bhgSharedSettings={...defaultSettings};applySettings(defaultSettings);
+document.addEventListener('DOMContentLoaded',()=>{
+ ['setName','setTagline','setNavy','setGold','setPaper','setSurface','setInk','setFont','setHeroAlign','desktopHero','desktopSpacing','desktopImage','desktopFont','mobileHero','mobileSpacing','mobileImage','mobileFont'].forEach(id=>{
+  const el=document.getElementById(id);if(el){el.addEventListener('input',previewSettings);el.addEventListener('change',previewSettings);}
+ });
+});
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
