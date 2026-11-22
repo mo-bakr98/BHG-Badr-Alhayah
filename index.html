@@ -81,7 +81,14 @@ body{background:var(--bhg-paper)!important;color:var(--bhg-ink)!important;font-f
 .settings-box input[type=range]{padding:0;accent-color:#0a4174}
 @media(max-width:700px){body{font-size:var(--bhg-font-mobile)!important}.hero{min-height:var(--bhg-hero-mobile)!important}.section{padding-block:var(--bhg-section-mobile)!important}#propertyGrid .card .photo,#propertyGrid .card .photo img{min-height:var(--bhg-property-mobile)!important}#propertyGrid .card .photo img{height:var(--bhg-property-mobile)!important}}
 
-/* BHG commercial packages */
+
+#homepageAdBannerItems .home-ad.tier-main{grid-column:1/-1;border:3px solid #7bbde8}
+#homepageAdBannerItems .home-ad.tier-main img{height:clamp(340px,38vw,500px)}
+#homepageAdBannerItems .home-ad.tier-featured{border:2px solid #9bc7e2}
+.ad-tier-badge{position:absolute;z-index:3;top:16px;right:16px;background:#001d39;color:#fff;padding:7px 13px;border-radius:30px;font-size:12px;font-weight:800;line-height:1.4;box-shadow:0 4px 14px #001d3930}
+#homepageAdBannerItems .home-ad.tier-main .ad-tier-badge{background:#7bbde8;color:#001d39}
+@media(max-width:600px){#homepageAdBannerItems .home-ad.tier-main img{height:270px}}
+\n/* BHG commercial packages */
 #plans{background:linear-gradient(180deg,#f7fbfe 0%,#eaf4fa 100%)!important;padding:76px 5%!important}
 .pricing-head{text-align:center;max-width:800px;margin:0 auto 28px}
 .pricing-kicker{display:inline-block;letter-spacing:2px;font-size:11px;font-weight:800;color:#28709c;background:#dcedf8;padding:7px 13px;border-radius:50px}
@@ -336,8 +343,88 @@ const platformClient=()=>window.siteDb;
 function platformStatus(id,text,error=false){const el=document.getElementById(id);if(el){el.textContent=text;el.style.color=error?'#b42318':'#26734d'}}
 function platformEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
 function safeExternalUrl(value){try{const u=new URL(String(value||''),location.href);return ['http:','https:'].includes(u.protocol)?u.href:'';}catch(e){return '';}}
-async function loadHomepageBanners(){const db=platformClient();if(!db)return;const section=document.getElementById('homepageAdBanner');const holder=document.getElementById('homepageAdBannerItems');const {data,error}=await db.from('sponsors').select('id,company_name,image_url,logo_url,ad_text,target_url,starts_at,ends_at').eq('active',true).eq('placement','banner').order('created_at',{ascending:false});if(error){console.warn('Homepage banners unavailable',error);return;}const now=Date.now();const active=(data||[]).filter(s=>(!s.starts_at||new Date(s.starts_at).getTime()<=now)&&(!s.ends_at||new Date(s.ends_at).getTime()>=now)&&!!(s.image_url||s.logo_url));if(!active.length){section.style.display='none';return;}holder.innerHTML=active.map(s=>{const image=s.image_url||s.logo_url;const content='<img src="'+platformEsc(image)+'" alt="'+platformEsc(s.company_name||'إعلان')+'" loading="lazy">'+(s.ad_text?'<span class="ad-caption">'+platformEsc(s.ad_text)+'</span>':'');const target=safeExternalUrl(s.target_url);return target?'<a class="home-ad" href="'+platformEsc(target)+'" target="_blank" rel="noopener noreferrer" aria-label="إعلان '+platformEsc(s.company_name)+'">'+content+'</a>':'<div class="home-ad no-link">'+content+'</div>';}).join('');section.style.display='block';}
-async function loadPublicSponsors(){const db=platformClient();if(!db)return;const grid=document.getElementById('sponsorGrid'),mini=document.getElementById('headerSponsorMini');const {data,error}=await db.from('sponsors').select('id,company_name,logo_url,image_url,ad_text,target_url,placement,tier,active,starts_at,ends_at').eq('active',true).order('tier');if(error){console.warn('Public sponsors unavailable',error);grid.innerHTML='<p class="empty">تعذر تحميل الرعاة حاليًا.</p>';return;}const now=Date.now(),visible=(data||[]).filter(s=>(!s.starts_at||new Date(s.starts_at).getTime()<=now)&&(!s.ends_at||new Date(s.ends_at).getTime()>=now));if(!visible.length){grid.innerHTML='<p class="empty">شركاؤنا قريبًا</p>';mini.innerHTML='';return;}const logo=s=>s.logo_url||s.image_url;const footerLogos=visible.filter(s=>s.placement==='footer_logo'&&!!(s.logo_url||s.image_url));grid.innerHTML=footerLogos.map(s=>'<a class="card sponsor-logo-item" '+(safeExternalUrl(s.target_url)?'href="'+platformEsc(safeExternalUrl(s.target_url))+'" target="_blank" rel="noopener noreferrer"':'')+' aria-label="'+platformEsc(s.company_name)+'">'+(logo(s)?'<img src="'+platformEsc(logo(s))+'" alt="'+platformEsc(s.company_name)+'">':'<span class="sponsor-name">'+platformEsc(s.company_name)+'</span>')+'</a>').join('')||'<p class="empty">شركاؤنا قريبًا</p>';const top=visible.find(s=>s.placement==='header_logo'&&s.logo_url);mini.innerHTML=top?'<img src="'+platformEsc(top.logo_url)+'" alt="'+platformEsc(top.company_name)+'">':'';/* Sponsor position is controlled by the saved page layout order. */}async function loadPublicPlans(){const db=platformClient();if(!db)return;const grid=document.getElementById('planGrid');const {data,error}=await db.from('subscription_plans').select('id,name,description,price,duration_days,features,account_type').order('price');if(error){grid.innerHTML='<p style="grid-column:1/-1">تعذر تحميل الباقات.</p>';return;}if(!data?.length){grid.innerHTML='<p style="grid-column:1/-1;color:#64748b">الباقات ستتوفر قريبًا.</p>';return;}grid.innerHTML=data.map(p=>'<article class="card"><div class="body"><span class="tag" style="position:static;display:inline-block">'+platformEsc(p.account_type)+'</span><h3>'+platformEsc(p.name)+'</h3><p>'+platformEsc(p.description||'')+'</p><div class="price">'+Number(p.price).toLocaleString('en-US')+' جنيه</div><p>مدة الباقة: '+p.duration_days+' يوم</p><ul>'+((Array.isArray(p.features)?p.features:[]).map(f=>'<li>'+platformEsc(f)+'</li>').join(''))+'</ul><div class="card-actions"><a href="#account" onclick="requestPlan(\''+p.id+'\')">طلب الاشتراك</a></div></div></article>').join('');}
+async function loadHomepageBanners(){
+ const db=platformClient();if(!db)return;
+ const section=document.getElementById('homepageAdBanner'),holder=document.getElementById('homepageAdBannerItems');
+ const {data,error}=await db.from('sponsors').select('id,company_name,image_url,logo_url,ad_text,target_url,tier,starts_at,ends_at').eq('active',true).eq('placement','banner').order('created_at',{ascending:false});
+ if(error){console.warn('Homepage banners unavailable',error);return}
+ const now=Date.now(),rank={main:0,featured:1,standard:2};
+ const active=(data||[]).filter(x=>(!x.starts_at||new Date(x.starts_at).getTime()<=now)&&(!x.ends_at||new Date(x.ends_at).getTime()>=now)&&!!(x.image_url||x.logo_url)).sort((a,b)=>(rank[a.tier]??3)-(rank[b.tier]??3));
+ if(!active.length){section.style.display='none';return}
+ holder.innerHTML=active.map(x=>{
+  const image=x.image_url||x.logo_url,tier=x.tier||'standard';
+  const badge=tier==='main'?'إعلان رئيسي':tier==='featured'?'إعلان مميز':'';
+  const content='<img src="'+platformEsc(image)+'" alt="'+platformEsc(x.company_name||'إعلان')+'" loading="lazy">'+(badge?'<span class="ad-tier-badge">'+badge+'</span>':'')+(x.ad_text?'<span class="ad-caption">'+platformEsc(x.ad_text)+'</span>':'');
+  const target=safeExternalUrl(x.target_url);
+  return target?'<a class="home-ad tier-'+tier+'" href="'+platformEsc(target)+'" target="_blank" rel="noopener noreferrer" aria-label="إعلان '+platformEsc(x.company_name)+'">'+content+'</a>':'<div class="home-ad no-link tier-'+tier+'">'+content+'</div>';
+ }).join('');
+ section.style.display='block';
+}
+async function loadPublicSponsors(){
+ const db=platformClient();if(!db)return;
+ const grid=document.getElementById('sponsorGrid'),mini=document.getElementById('headerSponsorMini');
+ const {data,error}=await db.from('sponsors').select('id,company_name,logo_url,image_url,ad_text,target_url,placement,tier,active,starts_at,ends_at').eq('active',true).order('tier');
+ if(error){console.warn('Public sponsors unavailable',error);grid.innerHTML='<p class="empty">تعذر تحميل الرعاة حاليًا.</p>';return}
+ const now=Date.now(),rank={main:0,featured:1,standard:2};
+ const visible=(data||[]).filter(x=>(!x.starts_at||new Date(x.starts_at).getTime()<=now)&&(!x.ends_at||new Date(x.ends_at).getTime()>=now)).sort((a,b)=>(rank[a.tier]??3)-(rank[b.tier]??3));
+ if(!visible.length){grid.innerHTML='<p class="empty">شركاؤنا قريبًا</p>';mini.innerHTML='';return}
+ const logo=x=>x.logo_url||x.image_url;
+ const footerLogos=visible.filter(x=>(x.placement==='footer_logo'||(x.placement==='header_logo'&&x.tier==='main'))&&!!logo(x));
+ grid.innerHTML=footerLogos.map(x=>'<a class="card sponsor-logo-item" '+(safeExternalUrl(x.target_url)?'href="'+platformEsc(safeExternalUrl(x.target_url))+'" target="_blank" rel="noopener noreferrer"':'')+' aria-label="'+platformEsc(x.company_name)+'">'+(logo(x)?'<img src="'+platformEsc(logo(x))+'" alt="'+platformEsc(x.company_name)+'">':'<span class="sponsor-name">'+platformEsc(x.company_name)+'</span>')+'</a>').join('')||'<p class="empty">شركاؤنا قريبًا</p>';
+ const top=visible.find(x=>x.placement==='header_logo'&&logo(x));
+ mini.innerHTML=top?'<img src="'+platformEsc(logo(top))+'" alt="'+platformEsc(top.company_name)+'"><span class="mini-label">'+(top.tier==='main'?'الراعي الرئيسي':'شريك بدر الحياة')+'</span>':'';
+}
+const commercialPackages={
+ ad:[
+  {name:'باقة البداية',subtitle:'ابدأ الظهور أمام الباحثين عن عقار في بدر',icon:'◫',monthly:600,prices:{1:600,3:1500,6:2700,12:4800},features:['بانر إعلاني داخل الصفحة الرئيسية أسفل البحث','رابط مباشر لموقعك أو صفحة نشاطك','ظهور عادي طوال مدة الاشتراك','مناسبة للتجربة والتعريف بالنشاط']},
+  {name:'باقة الانتشار',subtitle:'ظهور أوضح وأولوية أعلى وسط الإعلانات',icon:'✦',monthly:1200,prices:{1:1200,3:3000,6:5400,12:9600},popular:true,features:['كل مميزات باقة البداية','أولوية ظهور قبل الإعلانات العادية','شارة «إعلان مميز» على البانر','مناسبة للأنشطة التي تريد ظهورًا أقوى']},
+  {name:'باقة الإعلان الرئيسي',subtitle:'أقوى مساحة إعلانية متاحة على الموقع',icon:'◆',monthly:2000,prices:{1:2000,3:5100,6:9000,12:15600},features:['كل مميزات باقة الانتشار','أولوية أولى داخل مساحة البانرات','مساحة عرض أكبر للبانر','شارة «إعلان رئيسي» لتمييز نشاطك']}
+ ],
+ sponsor:[
+  {name:'باقة الداعم',subtitle:'خلّي اسم علامتك حاضرًا مع شركاء بدر الحياة',icon:'◎',monthly:900,prices:{1:900,3:2400,6:4200,12:7200},features:['عرض لوجو النشاط في شريط الرعاة أسفل الموقع','اسم الراعي ظاهر بجوار اللوجو','رابط مباشر إلى نشاطك أو صفحتك','مناسبة للشركات والمحلات والخدمات المحلية']},
+  {name:'باقة الشريك',subtitle:'ظهور في الشريط العلوي لزوار الموقع',icon:'✦',monthly:1800,prices:{1:1800,3:4800,6:8400,12:14400},popular:true,features:['كل مميزات باقة الداعم','عرض اللوجو في الشريط العلوي للموقع','أولوية ظهور ضمن الشركاء','رابط مباشر لنشاطك']},
+  {name:'باقة الراعي الرئيسي',subtitle:'حضور بارز في أعلى الموقع وأسفل الصفحة',icon:'◆',monthly:3500,prices:{1:3500,3:9300,6:16800,12:28800},features:['عرض اللوجو في الشريط العلوي','عرض اللوجو أيضًا في شريط الرعاة أسفل الموقع','أولوية أولى بين الرعاة','تمييز بصفتك الراعي الرئيسي']}
+ ]
+};
+let selectedPackageKind='ad',selectedPackageMonths=1;
+const packageMonthsLabel={1:'شهر واحد',3:'3 شهور',6:'6 شهور',12:'سنة كاملة'};
+function formatEGP(n){return Number(n).toLocaleString('en-US')}
+function setPackageKind(kind){
+ selectedPackageKind=kind;
+ document.getElementById('adKindBtn').classList.toggle('active',kind==='ad');
+ document.getElementById('sponsorKindBtn').classList.toggle('active',kind==='sponsor');
+ renderCommercialPackages();
+}
+function setPackageDuration(months,button){
+ selectedPackageMonths=months;
+ document.querySelectorAll('.duration-btn').forEach(x=>x.classList.toggle('active',Number(x.dataset.months)===months));
+ renderCommercialPackages();
+}
+function renderCommercialPackages(){
+ const plans=commercialPackages[selectedPackageKind]||[],months=selectedPackageMonths;
+ const title=selectedPackageKind==='ad'?'إعلانات البانر':'باقات الرعاية';
+ document.getElementById('packageIntro').textContent=selectedPackageKind==='ad'?'اختار مستوى ظهور إعلانك، ووفّر مع الاشتراك لفترة أطول.':'اختار مستوى الشراكة المناسب لعلامتك التجارية مع بدر الحياة.';
+ const box=document.getElementById('packageCards');
+ box.innerHTML=plans.map((p,i)=>{
+  const total=p.prices[months],monthly=Math.round(total/months),saving=Math.max(0,p.monthly*months-total);
+  const ribbon=p.popular?'<span class="package-ribbon">الأكثر طلبًا</span>':'';
+  return '<article class="package-card '+(p.popular?'popular':'')+'">'+ribbon+'<div class="package-icon">'+p.icon+'</div><h3>'+p.name+'</h3><div class="package-subtitle">'+p.subtitle+'</div><div class="package-price-line"><span class="package-price">'+formatEGP(monthly)+'</span><span class="package-currency">جنيه / شهر</span></div><div class="package-total">إجمالي '+packageMonthsLabel[months]+': <b>'+formatEGP(total)+' جنيه</b></div>'+(saving?'<span class="package-saving">وفّر '+formatEGP(saving)+' جنيه</span>':'')+'<ul class="package-features">'+p.features.map(f=>'<li>'+f+'</li>').join('')+'</ul><button class="package-cta" data-package-kind="'+selectedPackageKind+'" data-package-index="'+i+'" data-package-months="'+months+'" data-package-total="'+total+'">اطلب '+p.name+'</button></article>';
+ }).join('');
+ box.querySelectorAll('[data-package-kind]').forEach(btn=>btn.addEventListener('click',()=>{
+  const p=commercialPackages[btn.dataset.packageKind][Number(btn.dataset.packageIndex)];
+  requestCommercialPackage(btn.dataset.packageKind,p.name,Number(btn.dataset.packageMonths),Number(btn.dataset.packageTotal));
+ }));
+}
+function requestCommercialPackage(kind,name,months,total){
+ const settings=window.bhgSharedSettings||{};
+ const number=String(settings.whats||'').replace(/[^0-9]/g,'');
+ const status=document.getElementById('packageRequestStatus');
+ if(!number){status.textContent='طلب الباقة جاهز، لكن رقم واتساب الشركة غير مضاف. أضف الرقم من «إعدادات الموقع» حتى يعمل زر الطلب.';return}
+ const type=kind==='ad'?'إعلان بانر':'رعاية';
+ const message='مرحبًا بدر الحياة، أرغب في طلب '+type+' — '+name+'، لمدة '+packageMonthsLabel[months]+'، بإجمالي '+formatEGP(total)+' جنيه. برجاء التواصل معي لتأكيد التفاصيل.';
+ window.open('https://wa.me/'+number+'?text='+encodeURIComponent(message),'_blank','noopener,noreferrer');
+ status.textContent='سيتم فتح واتساب برسالة طلب الباقة.';
+}
 async function ensureCustomerProfile(user,name=''){const db=platformClient();const {data,error}=await db.from('platform_profiles').select('account_type,active').eq('user_id',user.id).maybeSingle();if(error)throw error;if(data){if(data.account_type!=='customer'||!data.active)throw new Error('هذا الحساب ليس حساب عميل نشطًا.');return;}const {error:insertError}=await db.from('platform_profiles').insert({user_id:user.id,display_name:name||user.user_metadata?.display_name||user.email?.split('@')[0]||'عميل',account_type:'customer',active:true});if(insertError)throw insertError;}
 async function customerSignUp(){const db=platformClient();const name=document.getElementById('accountName').value.trim(),email=document.getElementById('accountEmail').value.trim(),password=document.getElementById('accountPassword').value;if(!name||!email||password.length<8){platformStatus('accountStatus','اكتب الاسم والبريد وكلمة مرور 8 أحرف على الأقل.',true);return;}platformStatus('accountStatus','جارٍ إنشاء الحساب…');const {data,error}=await db.auth.signUp({email,password,options:{data:{display_name:name}}});if(error){platformStatus('accountStatus','تعذر إنشاء الحساب: '+error.message,true);return;}if(data.user&&data.session){try{await ensureCustomerProfile(data.user,name);bhgCustomer=data.user;renderCustomerAccount();platformStatus('accountStatus','تم إنشاء الحساب وتسجيل الدخول.');}catch(e){platformStatus('accountStatus','تم إنشاء الحساب لكن تعذر تجهيز الملف الشخصي: '+e.message,true);}}else if(data.user)platformStatus('accountStatus','تم إنشاء الحساب. افتح رسالة تأكيد البريد، وبعد التأكيد سجّل الدخول؛ سيتم تجهيز ملفك تلقائيًا.');}
 async function customerSignIn(){const db=platformClient(),email=document.getElementById('accountEmail').value.trim(),password=document.getElementById('accountPassword').value;if(!email||!password){platformStatus('accountStatus','اكتب البريد وكلمة المرور.',true);return;}platformStatus('accountStatus','جارٍ تسجيل الدخول…');const {data,error}=await db.auth.signInWithPassword({email,password});if(error){platformStatus('accountStatus','تعذر الدخول: '+error.message,true);return;}try{await ensureCustomerProfile(data.user);bhgCustomer=data.user;renderCustomerAccount();platformStatus('accountStatus','تم تسجيل الدخول.');}catch(e){await db.auth.signOut();platformStatus('accountStatus','تعذر تفعيل حساب العميل: '+e.message,true);}}
@@ -347,6 +434,6 @@ async function requestPlan(planId){if(!bhgCustomer){platformStatus('accountStatu
 async function ensureCustomerThread(){if(!bhgCustomer)return null;if(bhgThread)return bhgThread;const db=platformClient();const {data:threads,error}=await db.from('chat_threads').select('id').eq('created_by',bhgCustomer.id).eq('thread_type','customer').order('created_at',{ascending:false}).limit(1);if(error){platformStatus('customerChatStatus','تعذر الوصول للمحادثة: '+error.message,true);return null;}if(threads?.length){bhgThread=threads[0].id;return bhgThread;}const {data:thread,error:createError}=await db.from('chat_threads').insert({thread_type:'customer',title:'محادثة العميل '+bhgCustomer.email,created_by:bhgCustomer.id,customer_id:bhgCustomer.id}).select('id').single();if(createError){platformStatus('customerChatStatus','تعذر إنشاء محادثة: '+createError.message,true);return null;}const {error:participantError}=await db.from('chat_participants').insert({thread_id:thread.id,user_id:bhgCustomer.id});if(participantError){platformStatus('customerChatStatus','تم إنشاء المحادثة لكن تعذر تسجيل العضوية: '+participantError.message,true);return null;}bhgThread=thread.id;return bhgThread;}
 async function refreshCustomerChat(){if(!bhgCustomer)return;const thread=await ensureCustomerThread();if(!thread)return;const {data,error}=await platformClient().from('chat_messages').select('sender_id,body,attachment_url,created_at').eq('thread_id',thread).order('created_at',{ascending:true}).limit(100);const box=document.getElementById('customerMessages');if(error){box.textContent='تعذر تحميل الرسائل: '+error.message;return;}box.innerHTML=!data?.length?'ابدأ المحادثة بإرسال رسالتك.':data.map(m=>'<div style="margin:8px;padding:10px;background:'+(m.sender_id===bhgCustomer.id?'#e2f2e8':'#fff')+';border-radius:10px"><small>'+platformEsc(m.created_at)+'</small><div>'+platformEsc(m.body||'')+'</div></div>').join('');box.scrollTop=box.scrollHeight;}
 async function sendCustomerMessage(){if(!bhgCustomer){platformStatus('customerChatStatus','سجّل الدخول أولاً.',true);return;}const body=document.getElementById('customerMessage').value.trim();if(!body)return;const thread=await ensureCustomerThread();if(!thread)return;const {error}=await platformClient().from('chat_messages').insert({thread_id:thread,sender_id:bhgCustomer.id,body});if(error){platformStatus('customerChatStatus','تعذر إرسال الرسالة: '+error.message,true);return;}document.getElementById('customerMessage').value='';platformStatus('customerChatStatus','تم إرسال الرسالة.');refreshCustomerChat();}
-document.addEventListener('DOMContentLoaded',async()=>{const db=platformClient();if(!db)return;await loadHomepageBanners();await loadPublicSponsors();await loadPublicPlans();const {data}=await db.auth.getSession();if(data.session){try{await ensureCustomerProfile(data.session.user);bhgCustomer=data.session.user;renderCustomerAccount();}catch(e){platformStatus('accountStatus','تعذر تهيئة حسابك: '+e.message,true);}}});
+document.addEventListener('DOMContentLoaded',async()=>{const db=platformClient();if(!db)return;await loadHomepageBanners();await loadPublicSponsors();renderCommercialPackages();const {data}=await db.auth.getSession();if(data.session){try{await ensureCustomerProfile(data.session.user);bhgCustomer=data.session.user;renderCustomerAccount();}catch(e){platformStatus('accountStatus','تعذر تهيئة حسابك: '+e.message,true);}}});
 </script>
 </body></html>
