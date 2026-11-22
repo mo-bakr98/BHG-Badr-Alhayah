@@ -9,21 +9,22 @@
 :root{--navy:#001d39;--blue:#0a4174;--sky:#7bbde8;--pale:#edf5fa;--ink:#102b43;--muted:#617b91;--line:#d8e6f0}
 *{box-sizing:border-box}body{margin:0;background:var(--pale);font-family:Cairo,Arial,sans-serif;color:var(--ink)}button,input,textarea,select{font:inherit}
 .top{background:var(--navy);color:#fff;padding:15px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;box-shadow:0 5px 20px #001d3920}.brand{font-size:21px;font-weight:800}.brand span{color:var(--sky)}.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-main{max-width:1180px;margin:26px auto;padding:0 16px}.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 8px 28px #001d3908}.login{max-width:470px;margin:9vh auto}.field{margin:12px 0}.field label{display:block;font-weight:700;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid #cbdce8;border-radius:11px;background:#fff;color:var(--ink);font:inherit}.field textarea{min-height:100px;resize:vertical}.btn{border:0;background:var(--blue);color:#fff;padding:10px 17px;border-radius:11px;font:inherit;font-weight:800;cursor:pointer}.btn.gold{background:var(--sky);color:var(--navy)}.btn.secondary{background:#e7f0f6;color:var(--navy)}.btn.danger{background:#fae7e7;color:#a32626}.btn:disabled{opacity:.6;cursor:wait}.status{margin-top:10px;line-height:1.8;color:#26734d}.muted{color:var(--muted)}.hidden{display:none!important}
+main{max-width:1180px;margin:26px auto;padding:0 16px}.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 8px 28px #001d3908}.login{max-width:470px;margin:7vh auto}.login-brand{text-align:center;margin-bottom:16px}.login-sponsors{max-width:720px;margin:-4vh auto 24px}.login-sponsor-grid{display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap}.login-sponsor-grid img{max-width:145px;max-height:52px;object-fit:contain}.login-sponsor-grid .sponsor-name{font-weight:700;color:var(--muted);font-size:13px}.field{margin:12px 0}.field label{display:block;font-weight:700;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid #cbdce8;border-radius:11px;background:#fff;color:var(--ink);font:inherit}.field textarea{min-height:100px;resize:vertical}.btn{border:0;background:var(--blue);color:#fff;padding:10px 17px;border-radius:11px;font:inherit;font-weight:800;cursor:pointer}.btn.gold{background:var(--sky);color:var(--navy)}.btn.secondary{background:#e7f0f6;color:var(--navy)}.btn.danger{background:#fae7e7;color:#a32626}.btn:disabled{opacity:.6;cursor:wait}.status{margin-top:10px;line-height:1.8;color:#26734d}.muted{color:var(--muted)}.hidden{display:none!important}
 .navbar{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 20px}.navbtn{border:1px solid var(--line);background:#fff;color:var(--navy);padding:10px 15px;border-radius:11px;font-weight:800;cursor:pointer}.navbtn.active{background:var(--navy);color:#fff;border-color:var(--navy)}.tab{display:none}.tab.active{display:block}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.property{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}.property img{width:100%;height:190px;object-fit:cover;display:block;background:#e8f0f6}.property-body{padding:14px}.property h3{margin:0 0 6px}.price{font-size:19px;color:var(--blue);font-weight:800;margin:8px 0}.tag{display:inline-block;background:#e5f1f9;color:var(--blue);padding:4px 9px;border-radius:30px;font-size:12px;font-weight:800}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .thread-layout{display:grid;grid-template-columns:300px 1fr;gap:14px}.thread-list{border:1px solid var(--line);border-radius:13px;padding:8px;max-height:520px;overflow:auto}.thread{width:100%;text-align:right;padding:12px;border:1px solid transparent;border-radius:10px;background:#f4f8fb;margin:5px 0;cursor:pointer;font:inherit;color:var(--ink)}.thread.active{border-color:var(--sky);background:#e7f3fb}.conversation{border:1px solid var(--line);border-radius:13px;padding:12px;min-height:340px;display:flex;flex-direction:column}.msgs{flex:1;max-height:390px;overflow:auto;background:#f3f7fa;border-radius:12px;padding:12px}.msg{background:#fff;border-radius:10px;padding:10px;margin:8px;max-width:85%;box-shadow:0 2px 8px #001d3908}.msg.mine{background:#e2f2e8;margin-right:auto}.msg small{color:var(--muted);display:block;font-size:11px;margin-bottom:3px}.empty{padding:22px;text-align:center;color:var(--muted);background:#f7fafc;border-radius:12px}
 @media(max-width:760px){main{margin:16px auto}.panel{padding:16px}.formgrid,.cards{grid-template-columns:1fr}.thread-layout{grid-template-columns:1fr}.thread-list{max-height:210px}.top{padding:13px 4%}.brand{font-size:18px}}
 </style>
 </head>
 <body>
-<header class="top"><div class="brand">BHG <span>بدر الحياة</span> — بوابة الموظفين</div><div class="top-actions"><a class="btn secondary" href="index.html" style="text-decoration:none">العودة للموقع</a><button id="logoutBtn" class="btn gold hidden" onclick="signOut()">تسجيل خروج</button></div></header>
+<header class="top"><div class="brand"><img id="portalLogo" alt="شعار بدر الحياة" style="display:none;max-height:38px;max-width:95px;object-fit:contain;vertical-align:middle;margin-left:8px"><span id="portalBrandText">BHG بدر الحياة</span> — بوابة الموظفين</div><div class="top-actions"><a class="btn secondary" href="index.html" style="text-decoration:none">العودة للموقع</a><button id="logoutBtn" class="btn gold hidden" onclick="signOut()">تسجيل خروج</button></div></header>
 <main>
 <section class="panel login" id="login">
-<h2>تسجيل دخول الموظفين</h2><p class="muted">اكتب اسم المستخدم وكلمة المرور اللي استلمتهم من الإدارة.</p>
+<div class="login-brand"><img id="loginLogo" alt="شعار بدر الحياة" style="display:none;max-width:230px;max-height:125px;object-fit:contain;margin:0 auto 15px"><div id="loginBrandName" class="brand" style="color:var(--navy);font-size:25px">BHG بدر الحياة</div></div><h2 style="text-align:center">تسجيل دخول الموظفين</h2><p class="muted">اكتب اسم المستخدم وكلمة المرور اللي استلمتهم من الإدارة.</p>
 <div class="field"><label>اسم المستخدم</label><input id="username" type="text" autocomplete="username" placeholder="مثال: ahmed.saleh"></div>
 <div class="field"><label>كلمة المرور</label><input id="password" type="password" autocomplete="current-password"></div>
 <button class="btn gold" style="width:100%" onclick="signIn()">دخول</button><div id="loginStatus" class="status"></div>
 </section>
+<section id="loginSponsors" class="panel login-sponsors"><h3 style="text-align:center;margin:0 0 12px">شركاء بدر الحياة</h3><div id="loginSponsorGrid" class="login-sponsor-grid"><span class="muted">جارٍ تحميل الرعاة…</span></div></section>
 <section id="portal" class="hidden">
 <div class="panel toolbar"><div><h2 id="welcome" style="margin:0">أهلاً</h2><div id="role" class="muted"></div></div><div><span class="tag">بوابة عمل بدر الحياة</span></div></div>
 <nav class="navbar">
@@ -84,13 +85,13 @@ async function loadPortal(u){
  user=u;
  const {data:p,error}=await db.from('platform_profiles').select('display_name,account_type,role_key,active').eq('user_id',u.id).maybeSingle();
  if(error||!p||p.account_type!=='employee'||!p.active){await db.auth.signOut();user=null;status('loginStatus',error?'تعذر قراءة بيانات الموظف: '+error.message:'الحساب غير مفعل كموظف. راجع الإدارة.',true);return}
- profile=p;$('login').classList.add('hidden');$('portal').classList.remove('hidden');$('logoutBtn').classList.remove('hidden');
+ profile=p;$('login').classList.add('hidden');$('loginSponsors').classList.add('hidden');$('portal').classList.remove('hidden');$('logoutBtn').classList.remove('hidden');
  $('welcome').textContent='أهلاً '+(p.display_name||u.email);
  const labels={sales:'مبيعات',marketing:'تسويق',support:'خدمة العملاء',manager:'مدير فريق'};
  $('role').textContent='القسم: '+(labels[p.role_key]||'موظف');
  loadMyProperties();
 }
-async function signOut(){await db.auth.signOut();user=null;profile=null;threadId=null;$('portal').classList.add('hidden');$('login').classList.remove('hidden');$('logoutBtn').classList.add('hidden');$('username').value='';$('password').value='';$('password').focus()}
+async function signOut(){await db.auth.signOut();user=null;profile=null;threadId=null;$('portal').classList.add('hidden');$('login').classList.remove('hidden');$('loginSponsors').classList.remove('hidden');$('logoutBtn').classList.add('hidden');$('username').value='';$('password').value='';$('password').focus()}
 function resetPropertyForm(){editingId=null;$('propertyFormTitle').textContent='إضافة عقار جديد';['pTitle','pPrice','pAddress','pArea','pBeds','pBaths','pDescription'].forEach(id=>$(id).value='');$('pListing').value='sale';$('pType').value='شقة';$('pStatus').value='available';$('pImages').value='';status('propertyStatus','')}
 function editMyProperty(id){
  const p=cachedProperties.find(x=>x.id===id);if(!p)return;
@@ -159,6 +160,22 @@ async function sendMessage(){
  if(error){status('chatStatus','تعذر إرسال الرسالة: '+error.message,true);return}
  $('message').value='';status('chatStatus','تم إرسال الرسالة.');await refreshMessages();
 }
+async function loadPortalBranding(){
+ try{
+  const {data:row}=await db.from('site_settings').select('settings').eq('setting_key','main').maybeSingle();
+  const settings=row?.settings||{};
+  const brand=settings.name||'BHG بدر الحياة';
+  $('portalBrandText').textContent=brand;
+  $('loginBrandName').textContent=brand;
+  if(settings.logo){$('portalLogo').src=settings.logo;$('portalLogo').style.display='inline-block';$('loginLogo').src=settings.logo;$('loginLogo').style.display='block';}
+ }catch(e){console.warn('تعذر تحميل شعار البوابة',e)}
+ try{
+  const {data}=await db.from('sponsors').select('company_name,logo_url,image_url,placement').eq('active',true).in('placement',['footer_logo','header_logo']).order('tier');
+  const logos=(data||[]).filter(x=>x.logo_url||x.image_url);
+  $('loginSponsorGrid').innerHTML=logos.length?logos.map(x=>'<div><img src="'+esc(x.logo_url||x.image_url)+'" alt="'+esc(x.company_name||'راعي')+'"><div class="sponsor-name">'+esc(x.company_name||'')+'</div></div>').join(''):'<span class="muted">شركاؤنا قريبًا</span>';
+ }catch(e){$('loginSponsorGrid').innerHTML='<span class="muted">شركاؤنا قريبًا</span>'}
+}
+loadPortalBranding();
 db.auth.getSession().then(({data})=>{if(data.session)loadPortal(data.session.user)});
 </script>
 </body></html>
