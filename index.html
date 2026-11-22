@@ -132,6 +132,9 @@ body{background:var(--bhg-paper)!important;color:var(--bhg-ink)!important;font-f
 
 /* إخفاء بانر الإعلان من الصفحة الرئيسية بناءً على طلب المستخدم */
 #homepageAdBanner{display:none!important}
+
+/* إيقاف كل مساحات إعلانات البانر والراعي المصغر أعلى الموقع */
+#homepageAdBanner,#headerSponsorMini{display:none!important}
 </style>
 </head>
 <body>
@@ -379,21 +382,10 @@ function platformStatus(id,text,error=false){const el=document.getElementById(id
 function platformEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
 function safeExternalUrl(value){try{const u=new URL(String(value||''),location.href);return ['http:','https:'].includes(u.protocol)?u.href:'';}catch(e){return '';}}
 async function loadHomepageBanners(){
- const db=platformClient();if(!db)return;
- const section=document.getElementById('homepageAdBanner'),holder=document.getElementById('homepageAdBannerItems');
- const {data,error}=await db.from('sponsors').select('id,company_name,image_url,logo_url,ad_text,target_url,tier,starts_at,ends_at').eq('active',true).eq('placement','banner').order('created_at',{ascending:false});
- if(error){console.warn('Homepage banners unavailable',error);return}
- const now=Date.now(),rank={main:0,featured:1,standard:2};
- const active=(data||[]).filter(x=>(!x.starts_at||new Date(x.starts_at).getTime()<=now)&&(!x.ends_at||new Date(x.ends_at).getTime()>=now)&&!!(x.image_url||x.logo_url)).sort((a,b)=>(rank[a.tier]??3)-(rank[b.tier]??3));
- if(!active.length){section.style.display='none';return}
- holder.innerHTML=active.map(x=>{
-  const image=x.image_url||x.logo_url,tier=x.tier||'standard';
-  const badge=tier==='main'?'إعلان رئيسي':tier==='featured'?'إعلان مميز':'';
-  const content='<img src="'+platformEsc(image)+'" alt="'+platformEsc(x.company_name||'إعلان')+'" loading="lazy">'+(badge?'<span class="ad-tier-badge">'+badge+'</span>':'')+(x.ad_text?'<span class="ad-caption">'+platformEsc(x.ad_text)+'</span>':'');
-  const target=safeExternalUrl(x.target_url);
-  return target?'<a class="home-ad tier-'+tier+'" href="'+platformEsc(target)+'" target="_blank" rel="noopener noreferrer" aria-label="إعلان '+platformEsc(x.company_name)+'">'+content+'</a>':'<div class="home-ad no-link tier-'+tier+'">'+content+'</div>';
- }).join('');
- section.style.display='block';
+ const section=document.getElementById('homepageAdBanner');
+ if(section)section.remove();
+ const mini=document.getElementById('headerSponsorMini');
+ if(mini)mini.remove();
 }
 async function loadPublicSponsors(){
  const db=platformClient();if(!db)return;
