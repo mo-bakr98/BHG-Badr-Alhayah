@@ -238,10 +238,7 @@ function readSettings(){return {...defaultSettings,...(window.bhgSharedSettings|
 function applyLayoutOrder(order){
  const header=document.querySelector('.top');if(!header)return;const parent=header.parentNode;let anchor=header.nextSibling;
  const valid=['home','homepageAdBanner','sponsors','sale','about','plans','account','customerChat','contact'];
- const requested=Array.isArray(order)?order:defaultSettings.layoutOrder;
- const clean=requested.filter((id,i,a)=>valid.includes(id)&&a.indexOf(id)===i);
- const rest=clean.filter(id=>id!=='home').concat(valid.filter(id=>id!=='home'&&!clean.includes(id)));
- ['home',...rest].forEach(id=>{const el=document.getElementById(id);if(el)parent.insertBefore(el,anchor);});
+ (Array.isArray(order)?order:defaultSettings.layoutOrder).filter((id,i,a)=>valid.includes(id)&&a.indexOf(id)===i).concat(valid.filter(id=>!(order||[]).includes(id))).forEach(id=>{const el=document.getElementById(id);if(el)parent.insertBefore(el,anchor);});
 }
 function applySettings(v){
  const name=(v.name||defaultSettings.name).trim();
